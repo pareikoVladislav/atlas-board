@@ -8,3 +8,6 @@ class BaseFieldsModel(models.Model):
     updated_at: datetime = models.DateField(auto_now=True)
     deleted_at: datetime = models.DateField(auto_now=True)
     deleted: bool = models.BooleanField(default=False, db_default=False)
+
+    class Meta:
+        abstract = True

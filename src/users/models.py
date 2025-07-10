@@ -50,6 +50,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         null=True
     )
+    main_project = models.ForeignKey(
+        'projects.Project',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="main_staff"
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username",
