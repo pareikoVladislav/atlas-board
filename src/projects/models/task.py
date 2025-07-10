@@ -55,6 +55,12 @@ class Task(BaseFieldsModel):
         related_name="created_tasks"
     )
 
+    tags = models.ManyToManyField(
+        'Tag',
+        related_name='tasks',
+        blank=True
+    )
+
     class Meta:
         db_table = "tasks"
         verbose_name = "Task"
