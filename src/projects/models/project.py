@@ -39,6 +39,7 @@ class Project(BaseFieldsModel):
     priority: int = models.PositiveSmallIntegerField(
         _('Priority'),
         choices=Priority.choices(),
+        default=Priority.LOW,
         help_text="The priority level of the project."
     )
 
