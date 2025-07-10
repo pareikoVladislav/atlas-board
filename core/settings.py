@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'src.users.apps.UsersConfig',
 
     'src.projects.apps.ProjectsConfig'
 ]
@@ -53,6 +54,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
+AUTH_USER_MODEL = 'users.User'
 
 if env.bool('USE_REMOTE_DB'):
     DATABASES = {
