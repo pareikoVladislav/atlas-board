@@ -1,5 +1,16 @@
-# должность из предопределенного списка `position`
-from enum import StrEnum
+from enum import Enum, StrEnum
+
+
+class Priority(tuple, Enum):
+    LOW = 5, 'Low'
+    MEDIUM = 4, 'Medium'
+    HIGH = 3, 'High'
+    VERY_HIGH = 2, 'Very High'
+    URGENT = 1, 'Urgent'
+
+    @classmethod
+    def choices(cls):
+        return [(attr.value[0], attr.value[1]) for attr in cls]
 
 
 class Position(StrEnum):
@@ -23,6 +34,3 @@ class Position(StrEnum):
     @classmethod
     def choices(cls):
         return[(attr.value.upper(), attr.value) for attr in cls]
-
-
-

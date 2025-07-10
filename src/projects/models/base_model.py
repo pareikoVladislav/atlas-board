@@ -1,11 +1,12 @@
+from datetime import datetime
 from django.db import models
-from django.utils import timezone
+
 
 class BaseFieldsModel(models.Model):
-    created_at: timezone = models.DateTimeField(auto_now_add=True)
-    updated_at: timezone = models.DateTimeField(auto_now=True)
-    deleted_at: timezone = models.DateTimeField(null=True, blank=True)
-    deleted = models.BooleanField(default=False)
+    created_at: datetime = models.DateField(auto_now_add=True)
+    updated_at: datetime = models.DateField(auto_now=True)
+    deleted_at: datetime = models.DateField(null=True, blank=True)
+    deleted: bool = models.BooleanField(default=False, db_default=False)
 
     class Meta:
         abstract = True
