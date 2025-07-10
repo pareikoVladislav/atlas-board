@@ -1,8 +1,6 @@
 from pathlib import Path
 from environ import Env
 
-from src import projects
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -23,7 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'src.projects',
+    'src.projects.apps.ProjectsConfig',
+    'src.users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +53,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+
+AUTH_USER_MODEL = 'users.User'
 
 if env.bool('USE_REMOTE_DB'):
     DATABASES = {
