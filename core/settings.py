@@ -1,6 +1,8 @@
 from pathlib import Path
 from environ import Env
 
+from src import projects
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -21,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'src.projects',
 ]
 
 MIDDLEWARE = [
