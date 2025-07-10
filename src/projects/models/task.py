@@ -22,7 +22,6 @@ class Task(BaseFieldsModel):
         default=Status.new)
 
     priority = models.PositiveSmallIntegerField(
-        max_length=10,
         choices=Priority.choices(),
         default=Priority.LOW)
 
@@ -36,21 +35,24 @@ class Task(BaseFieldsModel):
 
     project = models.ForeignKey(
         'Project',  # строковая ссылка на проект
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="tasks"
     )
 
     assignee = models.ForeignKey(
         'users.User',  # строковая ссылка на пользователя
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name="assigned_tasks"
     )
 
     created_by = models.ForeignKey(
         'users.User',  # строковая ссылка на пользователя
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name="created_tasks"
     )
 
     class Meta:
@@ -58,7 +60,6 @@ class Task(BaseFieldsModel):
         verbose_name = "Task"
         verbose_name_plural = "Tasks"
         unique_together = ('project', 'title')
-        default_related_name = "tasks"
 
     def __str__(self):
         return self.title
