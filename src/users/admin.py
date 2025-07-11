@@ -51,10 +51,12 @@ class CustomUserAdmin(BaseUserAdmin):
          ),
         (
             _("Important dates"), {
-                "fields": ('last_login',)
+                "fields": ('last_login', 'date_joined')
             }
         )
     )
+
+    readonly_fields = ('last_login', 'date_joined')
 
     add_fieldsets = (
         (
@@ -64,7 +66,6 @@ class CustomUserAdmin(BaseUserAdmin):
             }
          ),
     )
-
 
 admin.site.unregister(Group)
 admin.site.register(Group)
