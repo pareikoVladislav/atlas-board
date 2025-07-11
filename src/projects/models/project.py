@@ -30,10 +30,12 @@ class Project(BaseFieldsModel):
         help_text="Users participating in the project"
     )
     start_date: datetime = models.DateField(_('Start date'), null=True)
+    end_date: datetime = models.DateField(_('End date'), null=True)
     status: str = models.CharField(
         _('Status'),
         max_length=30,
-        choices=ProjectStatus.choices
+        choices=ProjectStatus.choices(),
+        default=ProjectStatus.ACTIVE
     )
     is_active: bool = models.BooleanField(_('Is active'))
     priority: int = models.PositiveSmallIntegerField(
