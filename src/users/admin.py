@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+from src.users.actions import activate_users, deactivate_users
 from src.users.models import User
 
 
@@ -66,6 +67,9 @@ class UserAdmin(BaseUserAdmin):
             }
          ),
     )
+
+    actions = [activate_users, deactivate_users]
+
 
 admin.site.unregister(Group)
 admin.site.register(Group)
