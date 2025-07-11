@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 
 @admin.action(description="Activate selected users")
 def activate_users(self, request, queryset):
-    updated = queryset.update(is_active=True, deleted=False, deleted_at=None)
+    updated = queryset.update(is_active=True)
     self.message_user(
         request,
         f"Successfully activated {updated} users",
