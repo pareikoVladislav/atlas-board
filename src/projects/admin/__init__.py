@@ -1,1 +1,1 @@
-from .project_admin import *
+from src.projects.admin.project_admin import *
