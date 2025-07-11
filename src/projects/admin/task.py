@@ -3,6 +3,7 @@ from django.contrib import admin
 from src.projects.models.task import Task
 
 
+@admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     list_display = [
         'title',
@@ -65,22 +66,5 @@ class TaskAdmin(admin.ModelAdmin):
             }
         ),
     )
-
-
-#
-# ### При добавлении/редактировании объекта поля группировать:
-# 1. **Basic Information**: `title` `description` `project`
-# 2. **Status & Priority** `status` `priority`
-# 3. **Assignment**: `assignee` `created_by` `tags`
-# 4. **Timeline**: `due_date` `estimated_hours`
-# 5. **System Fields** (только для чтения, сворачиваемые): `created_at` `updated_at` `deleted_at`
-#
-# ### Системные поля только для чтения:
-# - `created_at`
-# - `updated_at`
-# - `deleted_at`
-
-
-admin.site.register(Task, TaskAdmin)
 
 
