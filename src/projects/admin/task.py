@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from src.projects.models.task import Task
+from .actions import mark_as_in_progress, mark_as_completed, set_high_priority
 
 
 @admin.register(Task)
@@ -38,6 +39,7 @@ class TaskAdmin(admin.ModelAdmin):
         'assignee'
     ]
     readonly_fields = ('created_at', 'updated_at', 'deleted_at')
+    actions = [mark_as_in_progress, mark_as_completed, set_high_priority]
     fieldsets = (
         (
             "**Basic Information**", {
@@ -66,5 +68,3 @@ class TaskAdmin(admin.ModelAdmin):
             }
         ),
     )
-
-
