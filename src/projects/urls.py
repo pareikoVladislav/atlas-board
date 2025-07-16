@@ -6,6 +6,7 @@ from src.projects.views import (
 )
 
 urlpatterns = [
-    path('/<int:project_id>/update/', update_project, name='update_by_id'),
     path('', get_all_projects, name='get_all_projects'),
+    path('<int:project_id>/update/', update_project, name='update_by_id'),
+
 ]

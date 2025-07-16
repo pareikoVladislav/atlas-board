@@ -3,7 +3,6 @@ from rest_framework import serializers
 from src.projects.models import Project
 
 class ProjectUpdateDTO(serializers.ModelSerializer):
-    partial = True
     class Meta:
         model = Project
         fields = (

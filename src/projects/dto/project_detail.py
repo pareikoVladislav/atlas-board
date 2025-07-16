@@ -5,4 +5,9 @@ from src.projects.models import Project
 class ProjectDetailDTO(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
+        exclude = (
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'deleted'
+        )
