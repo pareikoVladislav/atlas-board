@@ -34,8 +34,6 @@ class ProjectService:
             updated_project = self.repository.update(
                 id_=project_id,
                 **update_serializer.validated_data)
-            print("="*30)
-            print(updated_project)
             response = ProjectDetailDTO(updated_project)
             return ServiceResponse(
                 success=True,
