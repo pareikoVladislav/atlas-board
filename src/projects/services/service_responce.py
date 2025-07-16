@@ -8,14 +8,15 @@ class ErrorType(str, Enum):
     INTEGRITY_ERROR = "нарушение целостности данных"
     UNKNOWN_ERROR = "неизвестная ошибка"
 
+
 class ServiceResponse:
     def __init__(
-        self,
-        success: bool,
-        data: Optional[Any] = None,
-        errors: Optional[Dict[str, Any]] = None,
-        message: Optional[str] = None,
-        error_type: Optional[ErrorType] = None
+            self,
+            success: bool,
+            data: Optional[Any] = None,
+            errors: Optional[Dict[str, Any]] = None,
+            message: Optional[str] = None,
+            error_type: Optional[ErrorType] = None
     ) -> None:
         self.success: bool = success
         self.data: Optional[Any] = data

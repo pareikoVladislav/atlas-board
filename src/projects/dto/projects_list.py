@@ -13,3 +13,27 @@ class ProjectsListDTO(serializers.ModelSerializer):
             'is_active',
             'priority',
         ]
+
+
+class ProjectCreateDTO(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = [
+            'name',
+            'description',
+            'owner',
+            'team_lead',
+            'status',
+            'is_active',
+            'priority'
+        ]
+
+class ProjectDetailDTO(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        exclude = [
+            'created_at',
+            'updated_at',
+            'deleted_at',
+            'deleted'
+        ]

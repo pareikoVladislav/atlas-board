@@ -13,9 +13,48 @@ def get_all_projects(request:Request) -> Response:
     if result.success:
         return Response(data = result.data, status=status.HTTP_200_OK)
 
-    return Response({'message': result.message,'errors': result.errors},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response(
+        {'message': result.message, 'errors': result.errors},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
 
+
+@api_view(['POST'])
+def create_new_project(request: Request) -> Response:
+    raw_data = request.data
+    project_service = ProjectService()
+    result = project_service.create_project(raw_data)
+
+    if result.success:
+        return Response(
+            data=result.data,
+            status=status.HTTP_201_CREATED
+        )
+    else:
+        if result.error_type == 'validation_error':
+            return Response(
+                data={
+                    'error': result.message,
+                    'errors': result.errors
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        elif result.error_type == 'integrity_error':
+            return Response(
+                data={
+                    'error': result.message,
+                    'errors': result.errors
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+        else:
+            return Response(
+                data={
+                    'error': result.message,
+                    'errors': result.errors
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 @api_view(['PUT', 'PATCH'])
 def update_project(request: Request, project_id: int) -> Response:
@@ -34,6 +73,5 @@ def update_project(request: Request, project_id: int) -> Response:
 
     return Response(
         {"error": result.errors, "message": result.error_message},
-        status=status.HTTP_400_BAD_REQUEST)
-
-
+        status=status.HTTP_400_BAD_REQUEST
+    )
