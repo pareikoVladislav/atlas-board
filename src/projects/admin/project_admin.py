@@ -2,9 +2,12 @@ from django.contrib import admin
 
 from src.projects.models.project import Project
 
+from src.projects.admin.inline_forms import TaskInline
+
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
+    inlines = [TaskInline]
     # Отображаемые поля в списке
     list_display = (
         'name',
