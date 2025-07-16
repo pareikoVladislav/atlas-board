@@ -1,1 +1,1 @@
-from .project_repository import ProjectRepository
+from src.projects.repositories.project import ProjectRepository

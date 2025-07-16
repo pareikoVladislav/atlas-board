@@ -3,25 +3,20 @@ from src.projects.repositories import ProjectRepository
 from src.projects.serializers.project_dto import ProjectsListDTO
 from rest_framework.response import Response
 from rest_framework import status
+from src.projects.services.service_responce import ServiceResponse, ErrorType
 
-
-class ErrorType:
-    UNKNOWN_ERROR = 'UNKNOWN_ERROR'
-
-
-class ServiceResponse:
-    def __init__(self, data: Any = None, error: str = ''):
-        self.data = data
-        self.error = error
 
 
 class ProjectService:
-    @staticmethod
-    def get_all_projects() -> ServiceResponse:
+    def __init__(self):
+        self.repository = ProjectRepository()
+
+    def get_all_projects(self) -> ServiceResponse:
         try:
-            repository = ProjectRepository()
-            projects = repository.get_all()
+            projects = self.repository.get_all()
             serializer = ProjectsListDTO(projects, many=True)
-            return ServiceResponse(data=serializer.data)
+            return ServiceResponse(data=serializer.data, success=True)
         except Exception:
-            return ServiceResponse(error=ErrorType.UNKNOWN_ERROR)
+            return ServiceResponse(error_type=ErrorType.UNKNOWN_ERROR,
+                                   success=False,
+                                   message='ошибка при получении списка проектов')
