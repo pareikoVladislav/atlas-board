@@ -1,5 +1,6 @@
-from src.projects.repositories import BaseRepository
-from src.projects.models import Project
+from src.projects.models.project import Project
+from src.projects.repositories.base import BaseRepository
+
 
 class ProjectRepository(BaseRepository):
     def __init__(self):

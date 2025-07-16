@@ -8,4 +8,5 @@ dependencies = [
     "django-environ==0.12.0",
     "djangorestframework>=3.16.0",
     "mysqlclient==2.2.7",
+    "pymysql==1.1.0",
 ]
