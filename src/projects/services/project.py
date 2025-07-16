@@ -28,7 +28,7 @@ class ProjectService:
             serializer = ProjectCreateDTO(data=project_data)
             serializer.is_valid(raise_exception=True)
 
-            project = self.repository.create(**serializer.data)
+            project = self.repository.create(**serializer.validated_data)
             serialized_response = ProjectDetailDTO(project)
             return ServiceResponse(
                 data=serialized_response.data,
