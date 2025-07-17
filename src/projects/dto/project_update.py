@@ -1,16 +1,17 @@
 from rest_framework import serializers
-from src.projects.models.project import Project
 
+from src.projects.models import Project
 
-class ProjectsListDTO(serializers.ModelSerializer):
+class ProjectUpdateDTO(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = [
-            'id',
+        fields = (
             'name',
+            'description',
+            'team_lead',
             'start_date',
+            'end_date',
             'status',
             'is_active',
             'priority',
-        ]
-        
+        )

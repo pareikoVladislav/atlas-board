@@ -45,7 +45,10 @@ class BaseRepository:
             obj = self.get_by_id(id_)
             if obj is None:
                 raise ObjectDoesNotExist(f'Object with id {id_} does not exist')
-            return obj.update(**kwargs)
+            for attr, value in kwargs.items():
+                setattr(obj, attr, value)
+                obj.save()
+            return obj
         except ValidationError as v:
             raise ValidationError(f'Validation failed for {self.model.__name__} object') from v
         except IntegrityError as i:
