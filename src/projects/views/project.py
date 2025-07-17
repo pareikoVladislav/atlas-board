@@ -11,7 +11,7 @@ def get_all_projects(request:Request) -> Response:
     result = service_response.get_all_projects()
 
     if result.success:
-        return Response(data = result.data, status=status.HTTP_200_OK)
+        return Response(data=result.data, status=status.HTTP_200_OK)
 
     return Response(
         {'message': result.message, 'errors': result.errors},
