@@ -5,6 +5,7 @@ from django.db import DatabaseError, OperationalError, IntegrityError, transacti
 
 Model_ = TypeVar('Model_', bound=Model)
 
+
 class BaseRepository:
     def __init__(self, model: Type[Model_]) -> None:
         self.model = model
@@ -28,6 +29,7 @@ class BaseRepository:
         except DatabaseError as e:
             raise OperationalError(f'Failed to retrieve {self.model.__name__} objects') from e
 
+    @transaction.atomic
     def create(self, **kwargs) -> Model_:
         try:
             obj = self.model.objects.create(**kwargs)

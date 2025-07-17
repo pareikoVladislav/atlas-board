@@ -1,13 +1,13 @@
 from django.db import IntegrityError, DatabaseError
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from rest_framework.serializers import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 
-from src.projects.repositories.project import  ProjectRepository
-from src.projects.dto import ProjectUpdateDTO, ProjectDetailDTO, ProjectsListDTO
+from src.projects.repositories.project import ProjectRepository
+from src.projects.dto import ProjectUpdateDTO, ProjectCreateDTO, ProjectDetailDTO, ProjectsListDTO
 from src.projects.services.service_responce import ServiceResponse, ErrorType
 
 
 class ProjectService:
-
     def __init__(self):
         self.repository = ProjectRepository()
 
@@ -17,9 +17,52 @@ class ProjectService:
             serializer = ProjectsListDTO(projects, many=True)
             return ServiceResponse(data=serializer.data, success=True)
         except Exception:
-            return ServiceResponse(error_type=ErrorType.UNKNOWN_ERROR,
-                                   success=False,
-                                   message='ошибка при получении списка проектов')
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message='Error getting list of projects'
+            )
+
+    def create_project(self, project_data: dict) -> ServiceResponse:
+        try:
+            serializer = ProjectCreateDTO(data=project_data)
+            serializer.is_valid(raise_exception=True)
+
+            project = self.repository.create(**serializer.validated_data)
+            serialized_response = ProjectDetailDTO(project)
+            return ServiceResponse(
+                data=serialized_response.data,
+                success=True
+            )
+
+        except ValidationError as e:
+            return ServiceResponse(
+                error_type=ErrorType.VALIDATION_ERROR,
+                success=False,
+                message="Invalid data",
+                errors=serializer.errors
+            )
+
+        except IntegrityError as e:
+            return ServiceResponse(
+                error_type=ErrorType.INTEGRITY_ERROR,
+                success=False,
+                message=str(e)
+            )
+
+        except DatabaseError as e:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message=str(e)
+            )
+
+        except Exception as e:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message=f'Failed to create object {e}'
+            )
 
     def update_project(self, project_id: int, project_data: dict, partial=False):
         try:
@@ -58,5 +101,3 @@ class ProjectService:
                 error_type=ErrorType.UNKNOWN_ERROR.value,
                 message=str(e)
             )
-
-
