@@ -37,3 +37,17 @@ class ProjectDetailDTO(serializers.ModelSerializer):
             'deleted_at',
             'deleted'
         ]
+
+class ProjectUpdateDTO(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = (
+            'name',
+            'description',
+            'team_lead',
+            'start_date',
+            'end_date',
+            'status',
+            'is_active',
+            'priority',
+        )

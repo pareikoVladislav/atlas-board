@@ -1,9 +1,13 @@
-from src.projects.dto.project_detail import ProjectDetailDTO
-from src.projects.dto.project_update import ProjectUpdateDTO
-from src.projects.dto.projects_list import ProjectsListDTO
+from src.projects.dto.project import (
+    ProjectsListDTO,
+    ProjectCreateDTO,
+    ProjectDetailDTO,
+    ProjectUpdateDTO
+)
 
 __all__ = [
     'ProjectDetailDTO',
     'ProjectUpdateDTO',
-    'ProjectsListDTO'
+    'ProjectsListDTO',
+    'ProjectCreateDTO'
 ]
