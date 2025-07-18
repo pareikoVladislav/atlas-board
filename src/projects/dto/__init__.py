@@ -5,9 +5,16 @@ from src.projects.dto.project import (
     ProjectUpdateDTO
 )
 
+from src.projects.dto.task import (
+    TasksListDTO,
+    TaskDetailDTO,
+)
+
 __all__ = [
     'ProjectDetailDTO',
     'ProjectUpdateDTO',
     'ProjectsListDTO',
-    'ProjectCreateDTO'
+    'ProjectCreateDTO',
+    'TasksListDTO',
+    'TaskDetailDTO',
 ]
