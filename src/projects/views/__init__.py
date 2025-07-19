@@ -3,11 +3,11 @@ from src.projects.views.project import (
     update_project,
     create_new_project,
 )
-
 from src.projects.views.task import (
     task_list,
     task_detail,
 )
+
 
 __all__ = (
     "get_all_projects",
@@ -16,4 +16,3 @@ __all__ = (
     "task_list",
     "task_detail",
 )
-
