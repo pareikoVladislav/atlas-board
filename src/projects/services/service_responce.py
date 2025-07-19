@@ -3,10 +3,10 @@ from typing import Any, Dict, Optional
 
 
 class ErrorType(str, Enum):
-    NOT_FOUND = "объект не найден"
-    VALIDATION_ERROR = "ошибка валидации данных"
-    INTEGRITY_ERROR = "нарушение целостности данных"
-    UNKNOWN_ERROR = "неизвестная ошибка"
+    NOT_FOUND = "not_found"
+    VALIDATION_ERROR = "validation_error"
+    INTEGRITY_ERROR = "integrity_error"
+    UNKNOWN_ERROR = "unknown_error"
 
 
 class ServiceResponse:

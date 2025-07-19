@@ -1,3 +1,6 @@
-from .task import urlpatterns as task_urls
+from django.urls import path, include
 
-urlpatterns = task_urls
+urlpatterns = [
+    path('', include('src.projects.urls.project')),
+    path('tags/', include('src.projects.urls.tag'))
+]
