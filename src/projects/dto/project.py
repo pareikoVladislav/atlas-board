@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from src.projects.models.project import Project
+from src.projects.models import Project
 
 
 class ProjectsListDTO(serializers.ModelSerializer):
