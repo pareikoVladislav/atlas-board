@@ -3,7 +3,7 @@ from rest_framework.serializers import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
 from src.users.repositories import UserRepository
-from src.users.dto import ProjectDetailDTO, ProjectsListDTO
+from src.users.dto import UserDetailDTO, UsersListDTO
 from src.projects.services.service_responce import ServiceResponse, ErrorType
 
 
@@ -14,7 +14,7 @@ class UserService:
     def get_all_users(self) -> ServiceResponse:
         try:
             projects = self.repository.get_all()
-            serializer = ProjectsListDTO(projects, many=True)
+            serializer = UsersListDTO(projects, many=True)
             return ServiceResponse(data=serializer.data, success=True)
         except Exception:
             return ServiceResponse(
@@ -23,5 +23,32 @@ class UserService:
                 message='Error getting list of projects'
             )
 
-    def get_by_id(self, user_id: int) -> ServiceResponse:
-        pass
+    def retrieve_user(self, user_id: int) -> ServiceResponse:
+        try:
+            user = self.repository.get_by_id(
+                id_=user_id
+            )
+            response = UserDetailDTO(instance=user)
+
+            return ServiceResponse(
+                success=True,
+                data=response.data
+            )
+        except ObjectDoesNotExist as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.NOT_FOUND.value,
+                message=str(e)
+            )
+        except IntegrityError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.INTEGRITY_ERROR.value,
+                message=str(e)
+            )
+        except DatabaseError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR.value,
+                message=str(e)
+            )

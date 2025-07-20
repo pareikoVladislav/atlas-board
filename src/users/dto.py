@@ -2,7 +2,7 @@ from rest_framework import serializers
 from src.users.models import User
 
 
-class ProjectsListDTO(serializers.ModelSerializer):
+class UsersListDTO(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
@@ -14,11 +14,13 @@ class ProjectsListDTO(serializers.ModelSerializer):
             'is_active',
         ]
 
-class ProjectDetailDTO(serializers.ModelSerializer):
+class UserDetailDTO(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = [
             'updated_at',
             'deleted_at',
-            'deleted'
+            'deleted',
+            'password',
+            'user_permissions'
         ]

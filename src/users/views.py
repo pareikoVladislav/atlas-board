@@ -19,9 +19,9 @@ def get_all_users(request:Request) -> Response:
     )
 
 @api_view(['GET'])
-def get_by_id(request:Request) -> Response:
+def retrieve_user(request:Request, user_id: int) -> Response:
     service_response = UserService()
-    result = service_response.get_by_id()
+    result = service_response.retrieve_user(user_id)
 
     if result.success:
         return Response(data = result.data, status=status.HTTP_200_OK)
