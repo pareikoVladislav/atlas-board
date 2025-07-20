@@ -1,5 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, DatabaseError
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.request import Request
+from django.db.models.query import QuerySet
 
 from src.projects.dto.task import TaskCreateDTO, TaskUpdateDTO, TasksListDTO, TaskDetailDTO
 from src.projects.repositories import TaskRepository
@@ -9,12 +12,44 @@ from src.projects.services.service_responce import ServiceResponse, ErrorType
 class TaskService:
     def __init__(self):
         self.repository = TaskRepository()
-        
-    def get_all_tasks(self) -> ServiceResponse:
+        self.paginator = PageNumberPagination()
+        self.paginator.page_size = 10
+        self.paginator.page_size_query_param = 'page_size'
+
+    def get_page(self, request: Request, queryset: QuerySet) -> int:
+        from math import ceil
+
+        page = request.query_params.get('page')
+        total_items = len(queryset)
+        last_page = ceil(total_items / self.paginator.page_size)
+
+        if page and page.isdigit() and 1 <= int(page) <= last_page:
+            return int(page)
+
+        return 1
+
+    def get_page_size(self, request: Request) -> int:
+        page_size = request.query_params.get('page_size')
+
+        if page_size and page_size.isdigit() and 1 <= int(page_size) <= 100:
+            return int(page_size)
+
+        return self.paginator.page_size
+
+    def get_all_tasks_paginated(self, request: Request) -> ServiceResponse:
         try:
-            tasks = self.repository.get_all()
-            serializer = TasksListDTO(tasks, many=True)
-            return ServiceResponse(data=serializer.data, success=True)
+            page_size = self.get_page_size(request)
+            self.paginator.page_size = page_size
+
+            queryset = self.repository.get_all()
+
+            self.paginator.page = self.get_page(request, queryset)
+
+            paginated_queryset = self.paginator.paginate_queryset(queryset, request)
+            serializer = TasksListDTO(paginated_queryset, many=True)
+            paginated_data = self.paginator.get_paginated_response(serializer.data).data
+            return ServiceResponse(data=paginated_data, success=True)
+
         except Exception:
             return ServiceResponse(
                 error_type=ErrorType.UNKNOWN_ERROR,
