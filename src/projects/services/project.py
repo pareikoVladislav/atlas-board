@@ -2,6 +2,7 @@ from django.db import IntegrityError, DatabaseError
 from rest_framework.serializers import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
+from src.projects.dto.filters import ProjectFilterDTO
 from src.projects.repositories.project import ProjectRepository
 from src.projects.dto import ProjectUpdateDTO, ProjectCreateDTO, ProjectDetailDTO, ProjectsListDTO
 from src.projects.services.service_responce import ServiceResponse, ErrorType
@@ -99,5 +100,31 @@ class ProjectService:
             return ServiceResponse(
                 success=False,
                 error_type=ErrorType.UNKNOWN_ERROR.value,
+                message=str(e)
+            )
+
+    def get_all_projects_filtered(self, query_params: dict) -> ServiceResponse:
+        try:
+            dto = ProjectFilterDTO(data=query_params)
+            if not dto.is_valid():
+                return ServiceResponse(
+                    success=False,
+                    error_type=ErrorType.VALIDATION_ERROR,
+                    message="Invalid filter parameters",
+                    errors=dto.errors
+                )
+
+            filters = dto.validated_data
+            ordering = filters.pop('ordering', None)
+
+            projects = self.repository.get_filtered_projects(filters=filters, ordering=ordering)
+
+            serializer = ProjectsListDTO(projects, many=True)
+            return ServiceResponse(success=True, data=serializer.data)
+
+        except Exception as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
                 message=str(e)
             )

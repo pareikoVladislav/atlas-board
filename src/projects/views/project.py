@@ -8,7 +8,7 @@ from src.projects.services.project import ProjectService
 @api_view(['GET'])
 def get_all_projects(request:Request) -> Response:
     service_response = ProjectService()
-    result = service_response.get_all_projects()
+    result = service_response.get_all_projects_filtered(request.query_params)
 
     if result.success:
         return Response(data=result.data, status=status.HTTP_200_OK)
