@@ -10,6 +10,11 @@ from src.projects.dto.task import (
     TaskDetailDTO,
 )
 
+from src.projects.dto.project_file import (
+    ProjectFileSerializer,
+    ProjectFileDetailSerializer,
+)
+
 __all__ = [
     'ProjectDetailDTO',
     'ProjectUpdateDTO',
@@ -17,4 +22,6 @@ __all__ = [
     'ProjectCreateDTO',
     'TasksListDTO',
     'TaskDetailDTO',
+    'ProjectFileSerializer',
+    'ProjectFileDetailSerializer',
 ]

@@ -75,3 +75,16 @@ def update_project(request: Request, project_id: int) -> Response:
         {"error": result.errors, "message": result.error_message},
         status=status.HTTP_400_BAD_REQUEST
     )
+
+@api_view(['GET'])
+def get_all_project_files(request:Request) -> Response:
+    service_response = ProjectService()
+    result = service_response.get_all_files()
+
+    if result.success:
+        return Response(data=result.data, status=status.HTTP_200_OK)
+
+    return Response(
+        {'message': result.message, 'errors': result.errors},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )

@@ -70,3 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
+    @property
+    def full_name(self):
+        return f"{self.first_name.capitalize()} {self.last_name.capitalize()}"
+
