@@ -12,13 +12,23 @@ from src.projects.dto.task import (
     TaskAnalyticsPerDeveloperDTO
 )
 
+from src.projects.dto.project_file import (
+    ProjectFileDTO,
+    ProjectFileDetailDTO,
+)
+
 __all__ = [
     'ProjectDetailDTO',
     'ProjectUpdateDTO',
     'ProjectsListDTO',
     'ProjectCreateDTO',
+  
     'TasksListDTO',
     'TaskDetailDTO',
     'TaskAnalyticsPerProjectDTO',
     'TaskAnalyticsPerDeveloperDTO'
+
+    'ProjectFileDTO',
+    'ProjectFileDetailDTO',
 ]
+
