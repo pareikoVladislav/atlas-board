@@ -11,30 +11,25 @@ class ProjectRepository(BaseRepository):
     def get_filtered_projects(self, filters: dict = None, ordering: str = None):
         queryset = self.model.objects.all().annotate(members_count=Count('members'))
 
-        q = Q()
+        filter_kwargs = {}
+
         if filters:
             if 'owner_username' in filters:
-                q &= Q(owner__username__icontains=filters['owner_username'])
-
+                filter_kwargs['owner__username__icontains'] = filters['owner_username']
             if 'status' in filters:
-                q &= Q(status=filters['status'])
-
+                filter_kwargs['status'] = filters['status']
             if 'priority' in filters:
-                q &= Q(priority=filters['priority'])
-
+                filter_kwargs['priority'] = filters['priority']
             if 'start_date_from' in filters:
-                q &= Q(start_date__gte=filters['start_date_from'])
-
+                filter_kwargs['start_date__gte'] = filters['start_date_from']
             if 'start_date_to' in filters:
-                q &= Q(start_date__lte=filters['start_date_to'])
-
+                filter_kwargs['start_date__lte'] = filters['start_date_to']
             if 'members_count_from' in filters:
-                q &= Q(members_count__gte=filters['members_count_from'])
-
+                filter_kwargs['members_count__gte'] = filters['members_count_from']
             if 'members_count_to' in filters:
-                q &= Q(members_count__lte=filters['members_count_to'])
+                filter_kwargs['members_count__lte'] = filters['members_count_to']
 
-        queryset = queryset.filter(q)
+        queryset = queryset.filter(**filter_kwargs)
 
         if ordering:
             queryset = queryset.order_by(ordering)
