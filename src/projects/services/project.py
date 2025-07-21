@@ -3,7 +3,13 @@ from rest_framework.serializers import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
 from src.projects.repositories.project import ProjectRepository
-from src.projects.dto import ProjectUpdateDTO, ProjectCreateDTO, ProjectDetailDTO, ProjectsListDTO
+from src.projects.dto import (
+    ProjectUpdateDTO,
+    ProjectCreateDTO,
+    ProjectDetailDTO,
+    ProjectsListDTO,
+    ProjectFileDTO,
+)
 from src.projects.services.service_responce import ServiceResponse, ErrorType
 
 
@@ -100,4 +106,16 @@ class ProjectService:
                 success=False,
                 error_type=ErrorType.UNKNOWN_ERROR.value,
                 message=str(e)
+            )
+
+    def get_all_files(self, project_id: int) -> ServiceResponse:
+        try:
+            files = self.repository.get_all_project_files(project_id)
+            serializer = ProjectFileDTO(files, many=True)
+            return ServiceResponse(data=serializer.data, success=True)
+        except Exception:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message='Error getting list of projects'
             )
