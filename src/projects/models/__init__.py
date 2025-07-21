@@ -1,10 +1,12 @@
 from src.projects.models.task import Task
 from src.projects.models.project import Project
 from src.projects.models.tag import Tag
+from src.projects.models.projectfile import ProjectFile
 
 
 __all__ = [
     "Task",
     "Project",
-    'Tag'
+    'Tag',
+    'ProjectFile'
 ]
