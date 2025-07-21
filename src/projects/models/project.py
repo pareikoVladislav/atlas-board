@@ -45,6 +45,13 @@ class Project(BaseFieldsModel):
         help_text="The priority level of the project."
     )
 
+    files = models.ManyToManyField(
+        'ProjectFile',
+        related_name='projects',
+        blank=True,
+        help_text="Files associated with this project."
+    )
+
     class Meta:
         db_table = "projects"
         verbose_name = "Project"

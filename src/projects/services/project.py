@@ -4,7 +4,13 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from src.projects.dto.filters import ProjectFilterDTO
 from src.projects.repositories.project import ProjectRepository
-from src.projects.dto import ProjectUpdateDTO, ProjectCreateDTO, ProjectDetailDTO, ProjectsListDTO
+from src.projects.dto import (
+    ProjectUpdateDTO,
+    ProjectCreateDTO,
+    ProjectDetailDTO,
+    ProjectsListDTO,
+    ProjectFileDTO,
+)
 from src.projects.services.service_responce import ServiceResponse, ErrorType
 
 
@@ -103,6 +109,7 @@ class ProjectService:
                 message=str(e)
             )
 
+
     def get_all_projects_filtered(self, query_params: dict) -> ServiceResponse:
         try:
             dto = ProjectFilterDTO(data=query_params)
@@ -127,4 +134,16 @@ class ProjectService:
                 success=False,
                 error_type=ErrorType.UNKNOWN_ERROR,
                 message=str(e)
+            )
+
+    def get_all_files(self, project_id: int) -> ServiceResponse:
+        try:
+            files = self.repository.get_all_project_files(project_id)
+            serializer = ProjectFileDTO(files, many=True)
+            return ServiceResponse(data=serializer.data, success=True)
+        except Exception:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message='Error getting list of projects'
             )
