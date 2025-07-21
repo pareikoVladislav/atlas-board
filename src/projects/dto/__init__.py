@@ -8,6 +8,8 @@ from src.projects.dto.project import (
 from src.projects.dto.task import (
     TasksListDTO,
     TaskDetailDTO,
+    TaskAnalyticsPerProjectDTO,
+    TaskAnalyticsPerDeveloperDTO
 )
 
 __all__ = [
@@ -17,4 +19,6 @@ __all__ = [
     'ProjectCreateDTO',
     'TasksListDTO',
     'TaskDetailDTO',
+    'TaskAnalyticsPerProjectDTO',
+    'TaskAnalyticsPerDeveloperDTO'
 ]
