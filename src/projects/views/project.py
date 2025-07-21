@@ -77,9 +77,9 @@ def update_project(request: Request, project_id: int) -> Response:
     )
 
 @api_view(['GET'])
-def get_all_project_files(request:Request) -> Response:
+def get_all_project_files(request: Request, project_id:int) -> Response:
     service_response = ProjectService()
-    result = service_response.get_all_files()
+    result = service_response.get_all_files(project_id=project_id)
 
     if result.success:
         return Response(data=result.data, status=status.HTTP_200_OK)

@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
 from src.projects.models import ProjectFile
-from src.users.dto import UserShortSerializer
+from src.users.dto import UserShortDTO
 
-class ProjectFileSerializer(serializers.ModelSerializer):
+class ProjectFileDTO(serializers.ModelSerializer):
     class Meta:
         model = ProjectFile
         fields = (
@@ -15,8 +15,8 @@ class ProjectFileSerializer(serializers.ModelSerializer):
 
 
 
-class ProjectFileDetailSerializer(serializers.ModelSerializer):
-    uploaded_by = UserShortSerializer(read_only=True)
+class ProjectFileDetailDTO(serializers.ModelSerializer):
+    uploaded_by = UserShortDTO(read_only=True)
 
     class Meta:
         model = ProjectFile

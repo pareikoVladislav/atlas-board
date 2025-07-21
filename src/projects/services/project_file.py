@@ -3,7 +3,7 @@ from django.db import IntegrityError, DatabaseError
 
 from src.projects.repositories import ProjectRepository
 from src.projects.services.service_responce import ServiceResponse, ErrorType
-from src.projects.dto import ProjectFileSerializer
+from src.projects.dto import ProjectFileDetailDTO
 
 
 class ProjectFileService:
@@ -12,10 +12,10 @@ class ProjectFileService:
 
     def get_project_file_by_id(self, file_id: int) -> ServiceResponse:
         try:
-            task = self.repository.get_by_id(
+            file = self.repository.get_by_id(
                 id_=file_id
             )
-            response = ProjectFileSerializer(instance=task)
+            response = ProjectFileDetailDTO(instance=file)
 
             return ServiceResponse(
                 success=True,

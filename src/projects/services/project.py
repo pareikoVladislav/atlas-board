@@ -8,8 +8,7 @@ from src.projects.dto import (
     ProjectCreateDTO,
     ProjectDetailDTO,
     ProjectsListDTO,
-    ProjectFileSerializer,
-    ProjectFileDetailSerializer,
+    ProjectFileDTO,
 )
 from src.projects.services.service_responce import ServiceResponse, ErrorType
 
@@ -112,7 +111,7 @@ class ProjectService:
     def get_all_files(self, project_id: int) -> ServiceResponse:
         try:
             files = self.repository.get_all_project_files(project_id)
-            serializer = ProjectFileSerializer(files, many=True)
+            serializer = ProjectFileDTO(files, many=True)
             return ServiceResponse(data=serializer.data, success=True)
         except Exception:
             return ServiceResponse(

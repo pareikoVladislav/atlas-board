@@ -25,7 +25,7 @@ class UserDetailDTO(serializers.ModelSerializer):
             'user_permissions'
         ]
 
-class UserShortSerializer(serializers.ModelSerializer):
+class UserShortDTO(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'full_name']

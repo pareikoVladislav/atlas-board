@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 
 from src.projects.views import (
     create_new_project,
