@@ -11,7 +11,7 @@ def task_list(request: Request) -> Response:
     service = TaskService()
 
     if request.method == 'GET':
-        result = service.get_all_tasks()
+        result = service.get_all_tasks_paginated(request)
         if result.success:
             return Response(data=result.data, status=status.HTTP_200_OK)
         return Response(
