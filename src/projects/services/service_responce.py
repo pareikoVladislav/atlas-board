@@ -2,6 +2,12 @@ from enum import Enum
 from typing import Any, Dict, Optional
 
 
+class FileType(str, Enum):
+    PDF = "pdf"
+    DOC = "doc"
+    XLSX = "xlsx"
+    CSV = "csv"
+
 class ErrorType(str, Enum):
     NOT_FOUND = "not_found"
     VALIDATION_ERROR = "validation_error"

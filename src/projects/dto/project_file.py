@@ -14,6 +14,17 @@ class ProjectFileDTO(serializers.ModelSerializer):
         )
 
 
+class CreateProjectFileDTO(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProjectFile
+        fields = (
+            'name',
+            'file_path',
+            'uploaded_by'
+        )
+
+
 
 class ProjectFileDetailDTO(serializers.ModelSerializer):
     uploaded_by = UserShortDTO(read_only=True)
