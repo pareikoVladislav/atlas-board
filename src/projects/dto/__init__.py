@@ -13,6 +13,7 @@ from src.projects.dto.task import (
 from src.projects.dto.project_file import (
     ProjectFileDTO,
     ProjectFileDetailDTO,
+    CreateProjectFileDTO
 )
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     'TaskDetailDTO',
     'ProjectFileDTO',
     'ProjectFileDetailDTO',
+    'CreateProjectFileDTO',
 ]

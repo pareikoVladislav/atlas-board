@@ -7,6 +7,9 @@ from src.projects.services.project import ProjectService
 
 @api_view(['GET'])
 def get_all_projects(request:Request) -> Response:
+    print("="*30)
+    print(request.user)
+    print("="*30)
     service_response = ProjectService()
     result = service_response.get_all_projects_filtered(request.query_params)
 

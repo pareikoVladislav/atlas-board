@@ -8,6 +8,10 @@ class FileType(str, Enum):
     XLSX = "xlsx"
     CSV = "csv"
 
+    @classmethod
+    def choices(cls) -> list[str]:
+        return [attr.value.lower() for attr in cls]
+
 class ErrorType(str, Enum):
     NOT_FOUND = "not_found"
     VALIDATION_ERROR = "validation_error"
