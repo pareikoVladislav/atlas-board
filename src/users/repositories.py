@@ -10,12 +10,3 @@ Model_ = TypeVar('Model_', bound=Model)
 class UserRepository(BaseRepository):
     def __init__(self):
         super().__init__(User)
-
-    def get_by_email(self, email: str) -> Optional[Model_]:
-        try:
-            obj = self.model.objects.get(email=email)
-            return obj
-        except self.model.DoesNotExist:
-            return None
-        except DatabaseError as e:
-            raise OperationalError(f'Failed to retrieve {self.model.__name__} with email {email}') from e

@@ -1,37 +1,46 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError, DatabaseError
+from rest_framework.request import Request
+
 
 from src.projects.models import ProjectFile, Project
-from src.projects.repositories import ProjectRepository
+from src.projects.repositories import ProjectFileRepository
 from src.projects.services.service_responce import ServiceResponse, ErrorType
+from src.projects.services.project import ProjectService
 from src.projects.dto import ProjectFileDetailDTO, CreateProjectFileDTO
-from src.users.models import User
 
 
 class ProjectFileService:
     def __init__(self):
-        self.repository = ProjectRepository()
+        self.repository = ProjectFileRepository()
 
-    def create(self, data: dict, project: Project, user: User, file: bytes):
+    def create(self, request: Request) -> ServiceResponse:
+        """Get request data, prepare data for serializing.
+        Call CreateProjectFileDTO, validate data, create file object by project.
+        Prepare ServiceResponse."""
+
         try:
-            data.update({"file": file})
-            print("wir sind da")
+            project = request.data.get('project_id')
+            file = request.FILES.get('file')
+            user = request.user
+            project_service = ProjectService()
+            project_obj = project_service.get_project_by_id(int(project)).data
             serializer = CreateProjectFileDTO(
-                data=data,
+                data={
+                    "name": file.name,
+                    "file": file
+                },
                 context={
-                    "project": project,
+                    "project": project_obj,
                     "user": user,
-            }
+                }
             )
-            print("not valid")
             if not serializer.is_valid():
-                print("not valid")
                 return ServiceResponse(
                     success=False,
-                    error_type=ErrorType.VALIDATION_ERROR.value,
+                    error_type=ErrorType.VALIDATION_ERROR,
                     errors=serializer.errors,
                 )
-            print("wir go save serializer")
             serializer.save()
             return ServiceResponse(
                 success=True,
@@ -40,7 +49,7 @@ class ProjectFileService:
         except Exception as e:
             return ServiceResponse(
                 success=False,
-                error_type=ErrorType.UNKNOWN_ERROR.value,
+                error_type=ErrorType.UNKNOWN_ERROR,
                 errors=str(e),
             )
 
@@ -58,7 +67,7 @@ class ProjectFileService:
         except ObjectDoesNotExist as e:
             return ServiceResponse(
                 success=False,
-                error_type=ErrorType.NOT_FOUND.value,
+                error_type=ErrorType.NOT_FOUND,
                 message=str(e)
             )
         except IntegrityError as e:

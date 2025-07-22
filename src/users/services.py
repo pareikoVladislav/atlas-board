@@ -53,32 +53,3 @@ class UserService:
                 message=str(e)
             )
 
-    def retrieve_user_by_email(self, user_email: str) -> ServiceResponse:
-        try:
-            user = self.repository.get_by_email(
-                email=user_email
-            )
-            response = UserDetailDTO(instance=user)
-
-            return ServiceResponse(
-                success=True,
-                data=response.data
-            )
-        except ObjectDoesNotExist as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.NOT_FOUND.value,
-                message=str(e)
-            )
-        except IntegrityError as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.INTEGRITY_ERROR.value,
-                message=str(e)
-            )
-        except DatabaseError as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.UNKNOWN_ERROR.value,
-                message=str(e)
-            )

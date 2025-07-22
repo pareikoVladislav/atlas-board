@@ -25,11 +25,12 @@ class FileUtils:
         with open(file_path, 'wb') as new_file:
             for chunk in self.file.chunks():
                 new_file.write(chunk)
-        return file_path
+        return str(file_path)
 
     @staticmethod
     def normalize_file_name(file_name: str) -> str:
-        if not re.match('^[\wА-Яа-я-\s ]+$', str(file_name)):
+        # if not re.match('^[\wА-Яа-я-\s ]+$', str(file_name)):
+        if not re.match(r'^[\wА-Яа-яёЁ\s\-.]+$', str(file_name)):
             raise ValueError(f'{file_name} is not a valid file name.')
         new_file_name = file_name.replace(' ', '_')
         return new_file_name

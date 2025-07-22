@@ -12,9 +12,6 @@ from src.projects.services.service_responce import ErrorType
 
 @api_view(['GET'])
 def file_detail(request: Request, file_id: int) -> Response:
-    print("="*30)
-    print(request.user)
-    print("="*30)
     service = ProjectFileService()
     result = service.get_project_file_by_id(file_id=file_id)
     if result.success:
@@ -34,29 +31,8 @@ class FileProjectAPIView(APIView):
     project_file_service = ProjectFileService()
     user_service = UserService()
 
-
     def post(self, request: Request) -> Response:
-        print("=" * 30)
-        print(request.user)
-        print("=" * 30)
-        print(request.POST.dict())
-
-        project = request.data.get('project_id')
-        file = request.FILES.get('file')
-        if not project or not file:
-            return Response(
-                {"error": "Please provide a project file and a file."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        project_obj = self.project_service.get_project_by_id(project_id=project)
-        user = self.user_service.retrieve_user_by_email(user_email=request.user)
-        result = self.project_file_service.create(
-            data=request.POST.dict(),
-            project=project_obj,
-            user=user,
-            file=file,
-        )
+        result = self.project_file_service.create(request)
         if result.success:
             return Response(data=result.data, status=status.HTTP_201_CREATED)
         return Response(data=result.errors, status=status.HTTP_400_BAD_REQUEST)
