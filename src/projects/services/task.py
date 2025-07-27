@@ -4,7 +4,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from django.db.models.query import QuerySet
 
-from src.projects.dto.task import TaskCreateDTO, TaskUpdateDTO, TasksListDTO, TaskDetailDTO
+from src.projects.dto.task import (
+    TaskCreateDTO,
+    TaskUpdateDTO,
+    TasksListDTO,
+    TaskDetailDTO,
+    TaskAnalyticsPerProjectDTO,
+    TaskAnalyticsPerDeveloperDTO
+)
 from src.projects.repositories import TaskRepository
 from src.projects.services.service_responce import ServiceResponse, ErrorType
 
@@ -87,7 +94,6 @@ class TaskService:
                 message=str(e)
             )
 
-
     def create_task(self, task_data: dict) -> ServiceResponse:
         serializer = TaskCreateDTO(data=task_data)
         if not serializer.is_valid():
@@ -105,8 +111,7 @@ class TaskService:
         except DatabaseError as e:
             return ServiceResponse(success=False, error_type=ErrorType.UNKNOWN_ERROR, message=str(e))
 
-
-    def update_task(self, task_id:int, task_data: dict, partial=False) -> ServiceResponse:
+    def update_task(self, task_id: int, task_data: dict, partial=False) -> ServiceResponse:
         serializer = TaskUpdateDTO(data=task_data, partial=partial)
         if not serializer.is_valid():
             return ServiceResponse(
@@ -125,8 +130,7 @@ class TaskService:
         except DatabaseError as e:
             return ServiceResponse(success=False, error_type=ErrorType.UNKNOWN_ERROR, message=str(e))
 
-
-    def delete_task(self, task_id:int) -> ServiceResponse:
+    def delete_task(self, task_id: int) -> ServiceResponse:
         try:
             self.repository.delete(task_id)
             return ServiceResponse(success=True, message="Task deleted")
@@ -134,3 +138,43 @@ class TaskService:
             return ServiceResponse(success=False, error_type=ErrorType.NOT_FOUND, message=str(e))
         except DatabaseError as e:
             return ServiceResponse(success=False, error_type=ErrorType.UNKNOWN_ERROR, message=str(e))
+
+    def get_tasks_analytics_per_project(self):
+        try:
+            queryset = self.repository.get_tasks_analytics_per_project()
+            serializer = TaskAnalyticsPerProjectDTO(queryset, many=True)
+            return ServiceResponse(data=serializer.data, success=True)
+
+        except DatabaseError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
+                message=str(e)
+            )
+
+        except Exception as e:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message=str(e)
+            )
+
+    def get_tasks_analytics_per_developer(self):
+        try:
+            queryset = self.repository.get_tasks_analytics_per_project()
+            serializer = TaskAnalyticsPerDeveloperDTO(queryset, many=True)
+            return ServiceResponse(data=serializer.data, success=True)
+
+        except DatabaseError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
+                message=str(e)
+            )
+
+        except Exception as e:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message=str(e)
+            )
