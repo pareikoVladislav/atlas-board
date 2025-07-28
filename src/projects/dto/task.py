@@ -1,5 +1,9 @@
+from typing import Any
+
 from rest_framework import serializers
-from src.projects.models import Task
+from rest_framework.exceptions import ValidationError
+from src.projects.models import Task, TimeEntry
+
 
 class TasksListDTO(serializers.ModelSerializer):
     class Meta:

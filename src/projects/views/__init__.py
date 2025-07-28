@@ -15,15 +15,15 @@ from src.projects.views.tag import (
 from src.projects.views.task import (
     task_list,
     task_detail,
-  
+
     analytics_per_project,
     analytics_per_developer
 )
-
 from src.projects.views.project_file import (
     file_detail,
     FileProjectAPIView,
 )
+from src.projects.views.time_entry import create_time_entry
 
 __all__ = (
     "get_all_projects",
@@ -34,6 +34,7 @@ __all__ = (
   
     "task_list",
     "task_detail",
+    "create_time_entry",
   
     "analytics_per_project",
     "analytics_per_developer",

@@ -9,7 +9,7 @@ from src.projects.dto.task import (
     TasksListDTO,
     TaskDetailDTO,
     TaskAnalyticsPerProjectDTO,
-    TaskAnalyticsPerDeveloperDTO
+    TaskAnalyticsPerDeveloperDTO,
 )
 
 from src.projects.dto.project_file import (
@@ -17,13 +17,14 @@ from src.projects.dto.project_file import (
     ProjectFileDetailDTO,
     CreateProjectFileDTO
 )
+from src.projects.dto.time_entry import TimeEntryCreateDTO, TimeEntryDTO
 
 __all__ = [
     'ProjectDetailDTO',
     'ProjectUpdateDTO',
     'ProjectsListDTO',
     'ProjectCreateDTO',
-  
+
     'TasksListDTO',
     'TaskDetailDTO',
     'TaskAnalyticsPerProjectDTO',
@@ -32,4 +33,7 @@ __all__ = [
     'ProjectFileDTO',
     'ProjectFileDetailDTO',
     'CreateProjectFileDTO',
+
+    'TimeEntryCreateDTO',
+    'TimeEntryDTO'
 ]
