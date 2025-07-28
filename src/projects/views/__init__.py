@@ -21,6 +21,7 @@ from src.projects.views.task import (
 
 from src.projects.views.project_file import (
     file_detail,
+    FileProjectAPIView,
 )
 
 __all__ = (
@@ -41,6 +42,7 @@ __all__ = (
     "create_tag",
     "update_tag",
     "delete_tag",
-
-    "file_detail"
+  
+    "file_detail",
+    "FileProjectAPIView",
 )

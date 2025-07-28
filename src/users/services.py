@@ -63,3 +63,4 @@ class UserService:
                 error_type=ErrorType.UNKNOWN_ERROR.value,
                 message=str(e)
             )
+
