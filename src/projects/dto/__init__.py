@@ -1,15 +1,18 @@
+from src.projects.dto.filters import ProjectFilterDTO
 from src.projects.dto.project import (
     ProjectsListDTO,
     ProjectCreateDTO,
     ProjectDetailDTO,
-    ProjectUpdateDTO
+    ProjectUpdateDTO,
+    ProjectsListDetailDTO
 )
 
 from src.projects.dto.task import (
     TasksListDTO,
     TaskDetailDTO,
     TaskAnalyticsPerProjectDTO,
-    TaskAnalyticsPerDeveloperDTO
+    TaskAnalyticsPerDeveloperDTO,
+    NestedTaskShortInfoDTO,
 )
 
 from src.projects.dto.project_file import (
@@ -23,13 +26,16 @@ __all__ = [
     'ProjectUpdateDTO',
     'ProjectsListDTO',
     'ProjectCreateDTO',
-  
+    'ProjectsListDetailDTO',
+
     'TasksListDTO',
     'TaskDetailDTO',
     'TaskAnalyticsPerProjectDTO',
-    'TaskAnalyticsPerDeveloperDTO'
+    'TaskAnalyticsPerDeveloperDTO',
+    'NestedTaskShortInfoDTO',
 
     'ProjectFileDTO',
+    'ProjectFilterDTO',
     'ProjectFileDetailDTO',
     'CreateProjectFileDTO',
 ]

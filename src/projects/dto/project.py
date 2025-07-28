@@ -2,6 +2,8 @@ from typing import Any
 from rest_framework.exceptions import ValidationError
 
 from rest_framework import serializers
+
+from src.projects.dto.task import NestedTaskShortInfoDTO
 from src.projects.models import Project
 
 
@@ -61,3 +63,11 @@ class ProjectUpdateDTO(serializers.ModelSerializer):
             'is_active',
             'priority',
         )
+
+
+class ProjectsListDetailDTO(serializers.ModelSerializer):
+    tasks = NestedTaskShortInfoDTO(many=True)
+
+    class Meta:
+        model = Project
+        fields = '__all__'
