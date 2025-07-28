@@ -14,6 +14,7 @@ from src.projects.dto.task import (
 )
 from src.projects.repositories import TaskRepository
 from src.projects.services.service_responce import ServiceResponse, ErrorType
+from src.users.models import User
 
 
 class TaskService:
@@ -75,6 +76,7 @@ class TaskService:
                 success=True,
                 data=response.data
             )
+
         except ObjectDoesNotExist as e:
             return ServiceResponse(
                 success=False,
@@ -178,3 +180,11 @@ class TaskService:
                 success=False,
                 message=str(e)
             )
+
+    def assign_to_user(self, task_id: int, user: User) -> ServiceResponse:
+        task_data = {"assignee": user.id}
+        result = self.update_task(
+                         task_id=task_id,
+                         task_data=task_data,
+                         partial=True)
+        return result
