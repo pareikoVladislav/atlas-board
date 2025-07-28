@@ -35,7 +35,7 @@ class Project(BaseFieldsModel):
         _('Status'),
         max_length=30,
         choices=ProjectStatus.choices(),
-        default=ProjectStatus.ACTIVE
+        default=ProjectStatus.ACTIVE[0]
     )
     is_active: bool = models.BooleanField(_('Is active'))
     priority: int = models.PositiveSmallIntegerField(

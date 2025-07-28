@@ -88,3 +88,18 @@ def get_all_project_files(request: Request, project_id:int) -> Response:
         {'message': result.message, 'errors': result.errors},
         status=status.HTTP_500_INTERNAL_SERVER_ERROR
     )
+
+
+@api_view(['GET'])
+def get_active_projects(request:Request) -> Response:
+    service_response = ProjectService()
+    query_params = request.query_params
+    result = service_response.get_active_projects(query_params)
+
+    if result.success:
+        return Response(data=result.data, status=status.HTTP_200_OK)
+
+    return Response(
+        {'message': result.message, 'errors': result.errors},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )

@@ -2,14 +2,16 @@ from django.db import IntegrityError, DatabaseError
 from rest_framework.serializers import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 
-from src.projects.dto.filters import ProjectFilterDTO
+from src.choices.project import ProjectStatus
 from src.projects.repositories.project import ProjectRepository
 from src.projects.dto import (
+    ProjectFilterDTO,
     ProjectUpdateDTO,
     ProjectCreateDTO,
     ProjectDetailDTO,
     ProjectsListDTO,
     ProjectFileDTO,
+    ProjectsListDetailDTO
 )
 from src.projects.services.service_responce import ServiceResponse, ErrorType
 
@@ -109,8 +111,24 @@ class ProjectService:
                 message=str(e)
             )
 
-
     def get_all_projects_filtered(self, query_params: dict) -> ServiceResponse:
+        projects_qs = self._get_filtered_queryset(query_params)
+        serializer = ProjectsListDTO(projects_qs, many=True)
+        return ServiceResponse(success=True, data=serializer.data)
+
+    def get_all_files(self, project_id: int) -> ServiceResponse:
+        try:
+            files = self.repository.get_all_project_files(project_id)
+            serializer = ProjectFileDTO(files, many=True)
+            return ServiceResponse(data=serializer.data, success=True)
+        except Exception:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message='Error getting list of projects'
+            )
+
+    def _get_filtered_queryset(self, query_params: dict):
         try:
             dto = ProjectFilterDTO(data=query_params)
             if not dto.is_valid():
@@ -125,25 +143,18 @@ class ProjectService:
             ordering = filters.pop('ordering', None)
 
             projects = self.repository.get_filtered_projects(filters=filters, ordering=ordering)
+            return projects
 
-            serializer = ProjectsListDTO(projects, many=True)
-            return ServiceResponse(success=True, data=serializer.data)
-
-        except Exception as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.UNKNOWN_ERROR,
-                message=str(e)
-            )
-
-    def get_all_files(self, project_id: int) -> ServiceResponse:
-        try:
-            files = self.repository.get_all_project_files(project_id)
-            serializer = ProjectFileDTO(files, many=True)
-            return ServiceResponse(data=serializer.data, success=True)
         except Exception:
             return ServiceResponse(
                 error_type=ErrorType.UNKNOWN_ERROR,
                 success=False,
                 message='Error getting list of projects'
             )
+
+    def get_active_projects(self, query_params: dict) -> ServiceResponse:
+        projects_qs = self._get_filtered_queryset(query_params).filter(status=ProjectStatus.ACTIVE[0])
+        serializer = ProjectsListDetailDTO(projects_qs, many=True)
+        return ServiceResponse(data=serializer.data, success=True)
+
+
