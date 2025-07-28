@@ -6,11 +6,38 @@ from src.projects.models.base_model import BaseFieldsModel
 from src.choices import Status, Priority
 
 
-class Task(BaseFieldsModel):
+class TaskComment(BaseFieldsModel):
+    text = models.TextField(
+        validators=[MinLengthValidator(1)],
+        help_text="Comment text"
+    )
 
+    task = models.ForeignKey(
+        'Task',
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+
+    author = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='task_comments'
+    )
+
+    class Meta:
+        db_table = "task_comments"
+        verbose_name = "Task Comment"
+        verbose_name_plural = "Task Comments"
+        ordering = ['-created_at']  # Новые комментарии первыми
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on {self.task.title}"
+
+
+class Task(BaseFieldsModel):
     title = models.CharField(
         max_length=255,
-        validators = [MinLengthValidator(10)]
+        validators=[MinLengthValidator(10)]
     )
     description = models.TextField(
         blank=True,

@@ -1,5 +1,67 @@
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from src.projects.models import Task
+from src.projects.models import Task, TaskComment
+
+
+class TaskCommentCreateDTO(serializers.ModelSerializer):
+    class Meta:
+        model = TaskComment
+        fields = ['text']
+
+    def create(self, validated_data):
+        # Получаем task_id из URL
+        task_id = self.context['view'].kwargs.get('task_id')
+        author = self.context['request'].user
+
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            raise ValidationError("Task not found")
+
+        # Упрощенная проверка доступа - можно расширить позже
+        # Пока что любой аутентифицированный пользователь может комментировать
+
+        return TaskComment.objects.create(
+            task=task,
+            author=author,
+            **validated_data
+        )
+
+class TaskCommentDeleteDTO(serializers.ModelSerializer):
+    class Meta:
+        model = TaskComment
+        fields = ['id']
+
+class TaskCommentDetailDTO(serializers.ModelSerializer):
+    author_username = serializers.CharField(source='author.username', read_only=True)
+    author_email = serializers.CharField(source='author.email', read_only=True)
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+
+class TaskCommentUpdateDTO(serializers.ModelSerializer):
+    class Meta:
+        model = TaskComment
+        fields = ['text']
+
+
+class TaskCommentListDTO(serializers.ModelSerializer):
+    author_username = serializers.CharField(source='author.username', read_only=True)
+    author_email = serializers.CharField(source='author.email', read_only=True)
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+
+    class Meta:
+        model = TaskComment
+        fields = [
+            'id',
+            'text',
+            'author',
+            'author_username',
+            'author_email',
+            'created_by_username',
+            'created_at',
+            'updated_at'
+        ]
+        read_only_fields = ['id', 'author', 'created_by', 'created_at', 'updated_at']
+
 
 class TasksListDTO(serializers.ModelSerializer):
     # Добавляем читаемые поля из связанных объектов
