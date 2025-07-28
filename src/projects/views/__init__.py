@@ -3,14 +3,16 @@ from src.projects.views.project import (
     update_project,
     create_new_project,
     get_all_project_files,
-    get_all_project_files,
-    get_active_projects
+    get_active_projects,
+  
+    get_all_project_files
 )
 from src.projects.views.tag import (
     delete_tag,
     get_all_tags,
     create_tag,
-    get_tag_by_id, update_tag
+    update_tag
+    get_tag_by_id,
 )
 from src.projects.views.task import (
     task_list,
@@ -21,6 +23,7 @@ from src.projects.views.task import (
 )
 from src.projects.views.project_file import (
     file_detail,
+    FileProjectAPIView,
 )
 
 __all__ = (
@@ -42,6 +45,7 @@ __all__ = (
     "create_tag",
     "update_tag",
     "delete_tag",
-
-    "file_detail"
+  
+    "file_detail",
+    "FileProjectAPIView",
 )

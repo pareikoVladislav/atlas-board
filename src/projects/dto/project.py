@@ -1,3 +1,6 @@
+from typing import Any
+from rest_framework.exceptions import ValidationError
+
 from rest_framework import serializers
 
 from src.projects.dto.task import NestedTaskShortInfoDTO
@@ -29,6 +32,13 @@ class ProjectCreateDTO(serializers.ModelSerializer):
             'is_active',
             'priority'
         ]
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        owner = attrs.get('owner')
+        team_lead = attrs.get('team_lead')
+        if owner.id == team_lead.id:
+            raise ValidationError("The owner and team lead cannot be the same.")
+        return attrs
 
 class ProjectDetailDTO(serializers.ModelSerializer):
     class Meta:

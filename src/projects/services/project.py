@@ -157,4 +157,28 @@ class ProjectService:
         serializer = ProjectsListDetailDTO(projects_qs, many=True)
         return ServiceResponse(data=serializer.data, success=True)
 
-
+    def get_project_by_id(self, project_id: int) -> ServiceResponse:
+        try:
+            project = self.repository.get_by_id(id_=project_id)
+            if not project:
+                raise ObjectDoesNotExist(f'Project with id {project_id} does not exist')
+            return ServiceResponse(data=project, success=True)
+        except ObjectDoesNotExist as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.NOT_FOUND,
+                message=str(e)
+            )
+        except ValidationError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.VALIDATION_ERROR,
+                message=str(e)
+            )
+        except Exception as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
+                message="Uncaught error in project service",
+                errors=str(e)
+            )
