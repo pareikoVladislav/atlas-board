@@ -7,10 +7,9 @@ from src.choices import Status, Priority
 
 
 class Task(BaseFieldsModel):
-
     title = models.CharField(
         max_length=255,
-        validators = [MinLengthValidator(10)]
+        validators=[MinLengthValidator(10)]
     )
     description = models.TextField(
         blank=True,
