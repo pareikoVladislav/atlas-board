@@ -1,6 +1,7 @@
 from django.db import IntegrityError, DatabaseError
 from rest_framework.serializers import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 
 from src.users.repositories import UserRepository
 from src.users.dto import UserDetailDTO, UsersListDTO
@@ -11,10 +12,20 @@ class UserService:
     def __init__(self):
         self.repository = UserRepository()
 
-    def get_all_users(self) -> ServiceResponse:
+    def get_all_users(self, project_name=None, tasks_from=None, tasks_to=None) -> ServiceResponse:
         try:
-            projects = self.repository.get_all()
-            serializer = UsersListDTO(projects, many=True)
+            users_qs = self.repository.get_all()
+
+            if project_name:
+                users_qs = users_qs.filter(main_project__name__icontains=project_name)
+
+            if tasks_from is not None:
+                users_qs = users_qs.annotate(task_count=Count('assigned_tasks')).filter(task_count__gte=tasks_from)
+
+            if tasks_to is not None:
+                users_qs = users_qs.annotate(task_count=Count('assigned_tasks')).filter(task_count__lte=tasks_to)
+
+            serializer = UsersListDTO(users_qs, many=True)
             return ServiceResponse(data=serializer.data, success=True)
         except Exception:
             return ServiceResponse(

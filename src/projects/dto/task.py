@@ -64,3 +64,15 @@ class TaskUpdateDTO(serializers.ModelSerializer):
             'estimated_hours',
             'tags',
         ]
+
+class TaskAnalyticsPerProjectDTO(serializers.Serializer):
+    project_id = serializers.IntegerField()
+    total_tasks = serializers.IntegerField()
+    completed_tasks = serializers.IntegerField()
+    urgent_tasks_count = serializers.IntegerField()
+
+class TaskAnalyticsPerDeveloperDTO(serializers.Serializer):
+    assignee_id = serializers.IntegerField(allow_null=True)
+    total_tasks = serializers.IntegerField()
+    completed_tasks = serializers.IntegerField()
+    urgent_tasks_count = serializers.IntegerField()

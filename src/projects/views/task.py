@@ -51,3 +51,31 @@ def task_detail(request: Request, task_id: int) -> Response:
         if result.success:
             return Response(result.to_dict(), status=status.HTTP_200_OK)
         return Response(result.to_dict(), status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def analytics_per_project(request: Request) -> Response:
+    service = TaskService()
+    result = service.get_tasks_analytics_per_project()
+
+    if result.success:
+        return Response(data=result.data, status=status.HTTP_200_OK)
+
+    return Response(
+        {'message': result.message, 'errors': result.errors},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+
+
+@api_view(['GET'])
+def analytics_per_developer(request: Request) -> Response:
+    service = TaskService()
+    result = service.get_tasks_analytics_per_developer()
+
+    if result.success:
+        return Response(data=result.data, status=status.HTTP_200_OK)
+
+    return Response(
+        {'message': result.message, 'errors': result.errors},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
