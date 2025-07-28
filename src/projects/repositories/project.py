@@ -1,14 +1,14 @@
-
-from django.db.models import Q, Count
+from django.db.models import Count
 from typing import TypeVar, Optional
 from django.db.models import Model, QuerySet
 from django.db import DatabaseError, OperationalError
 
+from src.choices.project import ProjectStatus
 from src.projects.models.project import Project
 from src.projects.repositories.base import BaseRepository
 
-
 Model_ = TypeVar('Model_', bound=Model)
+
 
 class ProjectRepository(BaseRepository):
     def __init__(self):
@@ -54,3 +54,12 @@ class ProjectRepository(BaseRepository):
                 raise OperationalError(f'Failed to retrieve {self.model.__name__} with id {id_}') from e
         else:
             raise ValueError('id must be positive integer')
+
+    def get_active_projects(self) -> QuerySet[Model_]:
+        try:
+            queryset = self.model.objects.prefetch_related("tasks").filter(
+                status=ProjectStatus.ACTIVE[0]
+            )
+            return queryset
+        except DatabaseError as e:
+            raise OperationalError(f'Failed to retrieve {self.model.__name__} objects') from e

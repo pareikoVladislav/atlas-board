@@ -7,9 +7,11 @@ from src.projects.views import (
     get_all_project_files
 
 )
+from src.projects.views.project import ExtendedActiveProjectListAPIView
 
 urlpatterns = [
     path('', get_all_projects, name='get_all_projects'),
+    path('extended/', ExtendedActiveProjectListAPIView.as_view()),
     path('create/', create_new_project, name='create_new_project'),
     path('update/<int:project_id>/', update_project, name='update_by_id'),
     path('<int:project_id>/files/', get_all_project_files, name='get_all_project_files'),

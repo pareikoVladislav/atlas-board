@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
 from src.projects.services.project import ProjectService
+from rest_framework.views import APIView
 
 
 @api_view(['GET'])
-def get_all_projects(request:Request) -> Response:
+def get_all_projects(request: Request) -> Response:
     service_response = ProjectService()
     result = service_response.get_all_projects_filtered(request.query_params)
 
@@ -56,6 +57,7 @@ def create_new_project(request: Request) -> Response:
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+
 @api_view(['PUT', 'PATCH'])
 def update_project(request: Request, project_id: int) -> Response:
     project_data = request.data
@@ -76,8 +78,9 @@ def update_project(request: Request, project_id: int) -> Response:
         status=status.HTTP_400_BAD_REQUEST
     )
 
+
 @api_view(['GET'])
-def get_all_project_files(request: Request, project_id:int) -> Response:
+def get_all_project_files(request: Request, project_id: int) -> Response:
     service_response = ProjectService()
     result = service_response.get_all_files(project_id=project_id)
 
@@ -88,3 +91,18 @@ def get_all_project_files(request: Request, project_id:int) -> Response:
         {'message': result.message, 'errors': result.errors},
         status=status.HTTP_500_INTERNAL_SERVER_ERROR
     )
+
+
+class ExtendedActiveProjectListAPIView(APIView):
+    project_service = ProjectService()
+
+    def get(self, request: Request) -> Response:
+        result = self.project_service.get_active_projects()
+
+        if result.success:
+            return Response(data=result.data, status=status.HTTP_200_OK)
+
+        return Response(
+            {'message': result.message, 'errors': result.errors},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
