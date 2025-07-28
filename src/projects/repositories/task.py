@@ -15,6 +15,22 @@ class TaskRepository(BaseRepository):
     def __init__(self):
         super().__init__(Task)
 
+    def get_all(self) -> QuerySet:
+        """
+        Получить все задачи с предзагрузкой связанных данных
+        """
+        try:
+            qs = self.model.objects.select_related(
+                'project',  # JOIN с таблицей projects
+                'assignee',  # JOIN с таблицей users (assignee)
+                'created_by'  # JOIN с таблицей users (created_by)
+            ).prefetch_related(
+                'tags'  # Отдельный запрос для ManyToMany связи
+            )
+            return qs
+        except DatabaseError as e:
+            raise OperationalError(f'Failed to retrieve {self.model.__name__} objects') from e
+
     def get_tasks_analytics_per_project(self) -> QuerySet[dict[str, Any]]:
         try:
             queryset = self.model.objects.values('project_id').annotate(

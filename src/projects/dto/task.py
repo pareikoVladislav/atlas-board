@@ -2,6 +2,11 @@ from rest_framework import serializers
 from src.projects.models import Task
 
 class TasksListDTO(serializers.ModelSerializer):
+    # Добавляем читаемые поля из связанных объектов
+    project_name = serializers.CharField(source='project.name', read_only=True)
+    assignee_username = serializers.CharField(source='assignee.username', read_only=True)
+    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+
     class Meta:
         model = Task
         fields = [
@@ -11,9 +16,12 @@ class TasksListDTO(serializers.ModelSerializer):
             'priority',
             'estimated_hours',
             'deadline',
-            'project',
-            'assignee',
-            'created_by',
+            'project',          # ID проекта
+            'project_name',     # Название проекта
+            'assignee',         # ID исполнителя
+            'assignee_username', # Имя исполнителя
+            'created_by',       # ID создателя
+            'created_by_username', # Имя создателя
             'tags',
         ]
 
