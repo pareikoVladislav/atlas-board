@@ -12,13 +12,6 @@ from src.projects.views.tag import (
     get_tag_by_id,
     update_tag
 )
-from src.projects.views.task import (
-    task_list,
-    task_detail,
-  
-    analytics_per_project,
-    analytics_per_developer
-)
 
 from src.projects.views.project_file import (
     file_detail,
