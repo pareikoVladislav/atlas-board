@@ -3,9 +3,11 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.contrib.auth.models import AnonymousUser
 
 from src.projects.services.task import TaskService
 from src.projects.services.service_responce import ErrorType
+from src.users.models import User
 
 
 class TaskViewSet(ViewSet):
@@ -61,7 +63,11 @@ class TaskViewSet(ViewSet):
 
     @action(detail=True, methods=["post"])
     def assign_to_me(self, request: Request, task_id: int) -> Response:
-        result = self.service.assign_to_user(task_id, request.user)
+        #TODO вернутся после реализации аутентификации и удалить костыль
+        user = request.user
+        if isinstance(user, AnonymousUser):
+            user = User.objects.filter(is_superuser=True).first()
+        result = self.service.assign_to_user(task_id, user)
         if result.success:
             return Response(result.to_dict(), status=status.HTTP_200_OK)
         return Response(result.to_dict(), status=status.HTTP_400_BAD_REQUEST)
