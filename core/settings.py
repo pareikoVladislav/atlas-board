@@ -24,7 +24,9 @@ INSTALLED_APPS = [
     'src.projects.apps.ProjectsConfig',
     'src.users.apps.UsersConfig',
 
+    # 3-rd party
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
