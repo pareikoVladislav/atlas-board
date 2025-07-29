@@ -13,6 +13,5 @@ urlpatterns = [
     path('tags/', include('src.projects.urls.tag')),
     path('files/', include('src.projects.urls.project_file')),
 ] + router.urls
-]
 
 urlpatterns += router.urls
