@@ -35,6 +35,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'src.middleware.http_request_logger.HttpRequestLoggerMiddleware',
+
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -95,7 +97,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
@@ -107,3 +109,31 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/documents/'
 MEDIA_ROOT = BASE_DIR / 'documents'
+
+
+LOGGING_ROOT = BASE_DIR / 'logs'
+LOGGING_ROOT.mkdir(parents=True, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'formatters': {
+        'http_formatter': {
+            'format': '%(name)s [%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+        }
+    },
+    'handlers': {
+        'http_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': LOGGING_ROOT / 'http.log',
+            'formatter': 'http_formatter',
+        }
+    },
+    'loggers': {
+        'http': {
+            'handlers': ['http_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}

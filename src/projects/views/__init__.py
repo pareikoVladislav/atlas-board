@@ -28,7 +28,6 @@ __all__ = (
     "create_new_project",
   
     "get_all_project_files",
-  
 
     "get_all_tags",
     "get_tag_by_id",
