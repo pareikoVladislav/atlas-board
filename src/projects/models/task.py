@@ -60,6 +60,7 @@ class Task(BaseFieldsModel):
         related_name='tasks',
         blank=True
     )
+    completed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "tasks"

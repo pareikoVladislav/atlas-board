@@ -1,7 +1,9 @@
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
+from src.choices import Status
 from src.projects.dto.task import (
     TaskCreateDTO,
     TaskUpdateDTO,
@@ -129,3 +131,12 @@ class TaskService:
                          task_data=task_data,
                          partial=True)
         return result
+    def complete_task(self, task_id: int):
+        try:
+            task_data = {"status": Status.done, "completed_at": timezone.now()}
+            updated_task = self.repository.update(task_id, **task_data)
+            serializer = TaskDetailDTO(instance=updated_task)
+            return ServiceResponse(data=serializer.data, success=True)
+
+        except Exception as e:
+            return handle_service_error(e)

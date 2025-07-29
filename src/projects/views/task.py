@@ -98,6 +98,16 @@ class TaskViewSet(ViewSet):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+    @action(detail=True, methods=['post'], url_path='complete')
+    def complete(self, request: Request, pk=None) -> Response:
+
+        result = self.service.complete_task(task_id=pk)
+        if result.success:
+            return Response(result.data, status=status.HTTP_200_OK)
+        return Response(
+            {'message': result.message, 'errors': result.errors},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 
