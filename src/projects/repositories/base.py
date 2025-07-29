@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Optional
+from typing import TypeVar, Type, Optional, Any
 from django.db.models import Model, QuerySet
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import DatabaseError, OperationalError, IntegrityError, transaction
@@ -11,16 +11,16 @@ class BaseRepository:
         self.model = model
 
     def get_by_id(self, id_: int) -> Optional[Model_]:
-        if isinstance(id_, int) and id_ > 0:
-            try:
-                obj = self.model.objects.get(id=id_)
-                return obj
-            except self.model.DoesNotExist:
-                return None
-            except DatabaseError as e:
-                raise OperationalError(f'Failed to retrieve {self.model.__name__} with id {id_}') from e
-        else:
-            raise ValueError('id must be positive integer')
+        try:
+            obj_id = self._normalize_id(id_)
+            obj = self.model.objects.get(pk=obj_id)
+            return obj
+        except ObjectDoesNotExist as e:
+            raise ObjectDoesNotExist(str(e))
+        except ValueError as e:
+            raise ValidationError(str(e))
+        except DatabaseError as e:
+            raise OperationalError(f'Failed to retrieve {self.model.__name__} with id {id}') from e
 
     def get_all(self) -> QuerySet[Model_]:
         try:
@@ -44,6 +44,7 @@ class BaseRepository:
     @transaction.atomic
     def update(self, id_: int, **kwargs) -> Model_:
         try:
+            id_ = self._normalize_id(id_)
             obj = self.get_by_id(id_)
             if obj is None:
                 raise ObjectDoesNotExist(f'Object with id {id_} does not exist')
@@ -61,9 +62,22 @@ class BaseRepository:
     @transaction.atomic
     def delete(self, id_: int) -> None:
         try:
+            id_ = self._normalize_id(id_)
             obj = self.get_by_id(id_)
             if obj is None:
                 raise ObjectDoesNotExist(f'Object with id {id_} does not exist')
             obj.delete()
+
         except DatabaseError as e:
             raise OperationalError(f'Failed to delete {self.model.__name__} object') from e
+
+    def _normalize_id(self, id_: Any) -> int:
+        if isinstance(id_, int):
+            return id_
+        else:
+            if not id_.isdigit():
+                raise ValueError('id must be an integer')
+            int_id = int(id_)
+            if int_id < 1:
+                raise ValueError('id must be positive')
+            return int_id
