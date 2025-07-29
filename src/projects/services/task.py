@@ -14,6 +14,7 @@ from src.projects.repositories import TaskRepository
 from src.users.models import User
 from src.projects.services.service_responce import ServiceResponse
 from src.shared.exception_handlers import handle_service_error
+from src.projects.filters import TaskFilter
 
 
 class TaskService:
@@ -50,8 +51,10 @@ class TaskService:
 
             queryset = self.repository.get_all()
 
-            self.paginator.page = self.get_page(request, queryset)
-            paginated_queryset = self.paginator.paginate_queryset(queryset, request)
+            filtered_qs = TaskFilter(request.GET, queryset=queryset).qs
+
+            self.paginator.page = self.get_page(request, filtered_qs)
+            paginated_queryset = self.paginator.paginate_queryset(filtered_qs, request)
 
             serializer = TasksListDTO(paginated_queryset, many=True)
             paginated_data = self.paginator.get_paginated_response(serializer.data).data

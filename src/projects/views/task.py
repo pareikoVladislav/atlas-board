@@ -3,14 +3,18 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import AnonymousUser
 
 from src.projects.services.task import TaskService
 from src.projects.services.service_responce import ErrorType
 from src.users.models import User
+from src.projects.filters import TaskFilter
 
 
 class TaskViewSet(ViewSet):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TaskFilter
     lookup_url_kwarg = 'task_id'
     lookup_fields = 'task_id'
     service = TaskService()
