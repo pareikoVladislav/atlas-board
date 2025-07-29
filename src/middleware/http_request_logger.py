@@ -20,6 +20,7 @@ def mask_sensetive_data(data):
         for key, value in data.items()
     }
 
+
 class HttpRequestLoggerMiddleware:
 
     def __init__(self, get_response):
@@ -33,7 +34,7 @@ class HttpRequestLoggerMiddleware:
         duration = monotonic() - start_time
         method = request.method
 
-        path = request.get_full_path()
+        path = request.path
 
         status = response.status_code
         try:
