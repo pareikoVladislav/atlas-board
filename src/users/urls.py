@@ -1,7 +1,7 @@
 from django.urls import path
-from src.users.views import retrieve_user, get_all_users
+from src.users.views import retrieve_user, UserListGenericView
 
 urlpatterns = [
-    path('', get_all_users),
+    path('', UserListGenericView.as_view()),
     path('<int:user_id>/', retrieve_user),
 ]
