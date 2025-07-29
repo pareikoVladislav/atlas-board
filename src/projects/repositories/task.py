@@ -23,11 +23,11 @@ class TaskRepository(BaseRepository):
         """
         try:
             qs = self.model.objects.select_related(
-                'project',  # JOIN с таблицей projects
-                'assignee',  # JOIN с таблицей users (assignee)
-                'created_by'  # JOIN с таблицей users (created_by)
+                'project',
+                'assignee',
+                'created_by'
             ).prefetch_related(
-                'tags'  # Отдельный запрос для ManyToMany связи
+                'tags'
             )
             return qs
         except DatabaseError as e:

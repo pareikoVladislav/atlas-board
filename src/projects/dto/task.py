@@ -9,7 +9,6 @@ class TaskCommentCreateDTO(serializers.ModelSerializer):
         fields = ['text']
 
     def create(self, validated_data):
-        # Получаем task_id из URL
         task_id = self.context['view'].kwargs.get('task_id')
         author = self.context['request'].user
 
@@ -17,9 +16,6 @@ class TaskCommentCreateDTO(serializers.ModelSerializer):
             task = Task.objects.get(id=task_id)
         except Task.DoesNotExist:
             raise ValidationError("Task not found")
-
-        # Упрощенная проверка доступа - можно расширить позже
-        # Пока что любой аутентифицированный пользователь может комментировать
 
         return TaskComment.objects.create(
             task=task,
@@ -64,7 +60,6 @@ class TaskCommentListDTO(serializers.ModelSerializer):
 
 
 class TasksListDTO(serializers.ModelSerializer):
-    # Добавляем читаемые поля из связанных объектов
     project_name = serializers.CharField(source='project.name', read_only=True)
     assignee_username = serializers.CharField(source='assignee.username', read_only=True)
     created_by_username = serializers.CharField(source='created_by.username', read_only=True)
@@ -78,12 +73,12 @@ class TasksListDTO(serializers.ModelSerializer):
             'priority',
             'estimated_hours',
             'deadline',
-            'project',          # ID проекта
-            'project_name',     # Название проекта
-            'assignee',         # ID исполнителя
-            'assignee_username', # Имя исполнителя
-            'created_by',       # ID создателя
-            'created_by_username', # Имя создателя
+            'project',
+            'project_name',
+            'assignee',
+            'assignee_username',
+            'created_by',
+            'created_by_username',
             'tags',
         ]
 

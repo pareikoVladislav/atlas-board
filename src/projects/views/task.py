@@ -9,13 +9,14 @@ from rest_framework.views import APIView
 
 
 class TaskCommentsAPIView(APIView):
+    service = TaskCommentService()
+
     def get(self, request: Request, task_id: int) -> Response:
         """
         GET: Получить все комментарии задачи
         """
-        service = TaskCommentService()
 
-        result = service.get_task_comments(task_id)
+        result = self.service.get_task_comments(task_id)
         if result.success:
             return Response(data=result.data, status=status.HTTP_200_OK)
         return Response(
@@ -27,9 +28,7 @@ class TaskCommentsAPIView(APIView):
         """
         POST: Создать новый комментарий
         """
-
-        service = TaskCommentService()
-        result = service.create_comment(request, task_id)
+        result = self.service.create_comment(request, task_id)
         if result.success:
             return Response(result.data, status=status.HTTP_201_CREATED)
         return Response(
@@ -39,13 +38,13 @@ class TaskCommentsAPIView(APIView):
 
 
 class TaskCommentDetailAPIView(APIView):
+    service = TaskCommentService()
+
     def get(self, request: Request, task_id: int, comment_id: int) -> Response:
         """
         GET: получить конкретный комментарий по id
         """
-        service = TaskCommentService()
-
-        result = service.get_comment(comment_id)
+        result = self.service.get_comment(comment_id)
         if result.success:
             return Response(result.data, status=status.HTTP_200_OK)
 
@@ -53,9 +52,7 @@ class TaskCommentDetailAPIView(APIView):
         """
         PUT: Редактировать комментарий
         """
-        service = TaskCommentService()
-
-        result = service.update_comment(comment_id, request)
+        result = self.service.update_comment(comment_id, request)
         if result.success:
             return Response(result.data, status=status.HTTP_200_OK)
 
@@ -66,8 +63,7 @@ class TaskCommentDetailAPIView(APIView):
         )
 
     def delete(self, request: Request, task_id: int, comment_id: int) -> Response:
-        service = TaskCommentService()
-        result = service.delete_comment(comment_id, request.user.id)
+        result = self.service.delete_comment(comment_id, request.user.id)
         if result.success:
             return Response({'message': result.message}, status=status.HTTP_200_OK)
 
