@@ -1,4 +1,6 @@
 from django.core.exceptions import ValidationError
+from typing import Any
+
 from rest_framework import serializers
 from src.projects.models import Task, TaskComment
 
@@ -58,6 +60,9 @@ class TaskCommentListDTO(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'author', 'created_by', 'created_at', 'updated_at']
 
+from rest_framework.exceptions import ValidationError
+
+from src.projects.models import Task
 
 class TasksListDTO(serializers.ModelSerializer):
     project_name = serializers.CharField(source='project.name', read_only=True)
@@ -99,7 +104,8 @@ class TaskDetailDTO(serializers.ModelSerializer):
             'tags',
         ]
 
-        
+
+
 class TaskCreateDTO(serializers.ModelSerializer):
     class Meta:
         model = Task
@@ -115,6 +121,16 @@ class TaskCreateDTO(serializers.ModelSerializer):
             'created_by',
             'tags',
         ]
+
+    def validate(self, attrs: dict[str: Any]) -> dict[str, Any]:
+        task_deadline = attrs.get('deadline')
+        project = attrs.get('project')
+
+        if task_deadline.date() > project.end_date:
+            raise ValidationError("The task deadline is beyond the scope of the project")
+
+        return attrs
+
 
 class TaskUpdateDTO(serializers.ModelSerializer):
     class Meta:
