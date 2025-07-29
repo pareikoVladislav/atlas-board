@@ -1,4 +1,8 @@
+from typing import Any
+
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
 from src.projects.models import Task
 
 class TasksListDTO(serializers.ModelSerializer):
@@ -50,6 +54,16 @@ class TaskCreateDTO(serializers.ModelSerializer):
             'created_by',
             'tags',
         ]
+
+    def validate(self, attrs: dict[str: Any]) -> dict[str, Any]:
+        task_deadline = attrs.get('deadline')
+        project = attrs.get('project')
+
+        if task_deadline.date() > project.end_date:
+            raise ValidationError("The task deadline is beyond the scope of the project")
+
+        return attrs
+
 
 class TaskUpdateDTO(serializers.ModelSerializer):
     class Meta:
