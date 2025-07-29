@@ -1,66 +1,81 @@
-from rest_framework.viewsets import ModelViewSet
-
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from src.projects.services.task import TaskService
-from src.projects.models import Task
-from src.projects.dto.task import (
-    TaskCreateDTO,
-    TaskUpdateDTO,
-    TasksListDTO,
-    TaskDetailDTO
-)
 
 
-class TaskViewSet(ModelViewSet):
-    queryset = Task.objects.all()
+@api_view(['GET', 'POST'])
+def task_list(request: Request) -> Response:
     service = TaskService()
 
-    # def get_queryset(self):
-    #     return self.service.repository.get_all()
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return TasksListDTO
-        elif self.action == 'retrieve':
-            return TaskDetailDTO
-        elif self.action in ['update', 'partial_update']:
-            return TaskUpdateDTO
-        return TaskCreateDTO
-
-    @action(methods=["get"], detail=False, url_path="analytics-per-project")
-    def analytics_per_project(self, request: Request) -> Response:
-
-        result = self.service.get_tasks_analytics_per_project()
-
+    if request.method == 'GET':
+        result = service.get_all_tasks_paginated(request)
         if result.success:
             return Response(data=result.data, status=status.HTTP_200_OK)
-
         return Response(
             {'message': result.message, 'errors': result.errors},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+    if request.method == 'POST':
+        result = service.create_task(request.data)
+        if result.success:
+            return Response(result.to_dict(), status=status.HTTP_201_CREATED)
+        return Response(result.to_dict(), status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=["get"], detail=False, url_path="analytics-per-developer")
-    def analytics_per_developer(self, request: Request) -> Response:
 
-        result = self.service.get_tasks_analytics_per_developer()
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+def task_detail(request: Request, task_id: int) -> Response:
+    service = TaskService()
 
+    if request.method == 'GET':
+        result = service.get_task_by_id(task_id=task_id)
         if result.success:
             return Response(data=result.data, status=status.HTTP_200_OK)
-
         return Response(
-            {'message': result.message, 'errors': result.errors},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            {"error": result.errors, "message": result.message},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
-    @action(methods=["post"], detail=True, url_path="assign-to-me")
-    def assign_to_me(self, request: Request, task_id: int) -> Response:
-        result = self.service.assign_to_user(task_id, request.user)
+    if request.method in ['PUT', 'PATCH']:
+        partial = request.method == 'PATCH'
+        result = service.update_task(task_id, request.data, partial)
         if result.success:
             return Response(result.to_dict(), status=status.HTTP_200_OK)
         return Response(result.to_dict(), status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        result = service.delete_task(task_id)
+        if result.success:
+            return Response(result.to_dict(), status=status.HTTP_200_OK)
+        return Response(result.to_dict(), status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def analytics_per_project(request: Request) -> Response:
+    service = TaskService()
+    result = service.get_tasks_analytics_per_project()
+
+    if result.success:
+        return Response(data=result.data, status=status.HTTP_200_OK)
+
+    return Response(
+        {'message': result.message, 'errors': result.errors},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
+
+
+@api_view(['GET'])
+def analytics_per_developer(request: Request) -> Response:
+    service = TaskService()
+    result = service.get_tasks_analytics_per_developer()
+
+    if result.success:
+        return Response(data=result.data, status=status.HTTP_200_OK)
+
+    return Response(
+        {'message': result.message, 'errors': result.errors},
+        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    )
