@@ -8,7 +8,8 @@ from src.projects.views.tag import (
     delete_tag,
     get_all_tags,
     create_tag,
-    get_tag_by_id
+    get_tag_by_id,
+    update_tag,
 )
 from src.projects.views.task import (
     TaskViewSet
@@ -32,6 +33,7 @@ __all__ = (
     "get_tag_by_id",
     "create_tag",
     "delete_tag",
+    "update_tag",
 
     "file_detail"
 )
