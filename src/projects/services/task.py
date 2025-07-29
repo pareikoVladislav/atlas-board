@@ -1,5 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError, DatabaseError
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from django.db.models.query import QuerySet
@@ -13,8 +11,9 @@ from src.projects.dto.task import (
     TaskAnalyticsPerDeveloperDTO
 )
 from src.projects.repositories import TaskRepository
-from src.projects.services.service_responce import ServiceResponse, ErrorType
 from src.users.models import User
+from src.projects.services.service_responce import ServiceResponse
+from src.shared.exception_handlers import handle_service_error
 
 
 class TaskService:
@@ -52,18 +51,15 @@ class TaskService:
             queryset = self.repository.get_all()
 
             self.paginator.page = self.get_page(request, queryset)
-
             paginated_queryset = self.paginator.paginate_queryset(queryset, request)
+
             serializer = TasksListDTO(paginated_queryset, many=True)
             paginated_data = self.paginator.get_paginated_response(serializer.data).data
+
             return ServiceResponse(data=paginated_data, success=True)
 
-        except Exception:
-            return ServiceResponse(
-                error_type=ErrorType.UNKNOWN_ERROR,
-                success=False,
-                message='Error getting list of tasks'
-            )
+        except Exception as e:
+            return handle_service_error(e)
 
     def get_task_by_id(self, task_id: int) -> ServiceResponse:
         try:
@@ -72,114 +68,59 @@ class TaskService:
             )
             response = TaskDetailDTO(instance=task)
 
-            return ServiceResponse(
-                success=True,
-                data=response.data
-            )
-
-        except ObjectDoesNotExist as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.NOT_FOUND.value,
-                message=str(e)
-            )
-        except IntegrityError as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.INTEGRITY_ERROR.value,
-                message=str(e)
-            )
-        except DatabaseError as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.UNKNOWN_ERROR.value,
-                message=str(e)
-            )
+        except Exception as e:
+            return handle_service_error(e)
 
     def create_task(self, task_data: dict) -> ServiceResponse:
-        serializer = TaskCreateDTO(data=task_data)
-        if not serializer.is_valid():
-            return ServiceResponse(
-                success=False,
-                errors=serializer.errors,
-                error_type=ErrorType.VALIDATION_ERROR,
-                message="Invalid data"
-            )
         try:
+            serializer = TaskCreateDTO(data=task_data)
+            serializer.is_valid(raise_exception=True)
+
             task = self.repository.create(**serializer.validated_data)
             return ServiceResponse(success=True, data={"id": task.id})
-        except IntegrityError as e:
-            return ServiceResponse(success=False, error_type=ErrorType.INTEGRITY_ERROR, message=str(e))
-        except DatabaseError as e:
-            return ServiceResponse(success=False, error_type=ErrorType.UNKNOWN_ERROR, message=str(e))
+
+        except Exception as e:
+            return handle_service_error(e)
 
     def update_task(self, task_id: int, task_data: dict, partial=False) -> ServiceResponse:
-        serializer = TaskUpdateDTO(data=task_data, partial=partial)
-        if not serializer.is_valid():
-            return ServiceResponse(
-                success=False,
-                errors=serializer.errors,
-                error_type=ErrorType.VALIDATION_ERROR,
-                message="Invalid data"
-            )
         try:
+            serializer = TaskUpdateDTO(data=task_data, partial=partial)
+            serializer.is_valid(raise_exception=True)
+
             task = self.repository.update(task_id, **serializer.validated_data)
+
             return ServiceResponse(success=True, data={"id": task.id})
-        except ObjectDoesNotExist as e:
-            return ServiceResponse(success=False, error_type=ErrorType.NOT_FOUND, message=str(e))
-        except IntegrityError as e:
-            return ServiceResponse(success=False, error_type=ErrorType.INTEGRITY_ERROR, message=str(e))
-        except DatabaseError as e:
-            return ServiceResponse(success=False, error_type=ErrorType.UNKNOWN_ERROR, message=str(e))
+
+        except Exception as e:
+            return handle_service_error(e)
 
     def delete_task(self, task_id: int) -> ServiceResponse:
         try:
             self.repository.delete(task_id)
             return ServiceResponse(success=True, message="Task deleted")
-        except ObjectDoesNotExist as e:
-            return ServiceResponse(success=False, error_type=ErrorType.NOT_FOUND, message=str(e))
-        except DatabaseError as e:
-            return ServiceResponse(success=False, error_type=ErrorType.UNKNOWN_ERROR, message=str(e))
+
+        except Exception as e:
+            return handle_service_error(e)
 
     def get_tasks_analytics_per_project(self):
         try:
             queryset = self.repository.get_tasks_analytics_per_project()
             serializer = TaskAnalyticsPerProjectDTO(queryset, many=True)
+
             return ServiceResponse(data=serializer.data, success=True)
 
-        except DatabaseError as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.UNKNOWN_ERROR,
-                message=str(e)
-            )
-
         except Exception as e:
-            return ServiceResponse(
-                error_type=ErrorType.UNKNOWN_ERROR,
-                success=False,
-                message=str(e)
-            )
+            return handle_service_error(e)
 
     def get_tasks_analytics_per_developer(self):
         try:
             queryset = self.repository.get_tasks_analytics_per_project()
             serializer = TaskAnalyticsPerDeveloperDTO(queryset, many=True)
+
             return ServiceResponse(data=serializer.data, success=True)
 
-        except DatabaseError as e:
-            return ServiceResponse(
-                success=False,
-                error_type=ErrorType.UNKNOWN_ERROR,
-                message=str(e)
-            )
-
         except Exception as e:
-            return ServiceResponse(
-                error_type=ErrorType.UNKNOWN_ERROR,
-                success=False,
-                message=str(e)
-            )
+            return handle_service_error(e)
 
     def assign_to_user(self, task_id: int, user: User) -> ServiceResponse:
         task_data = {"assignee": user.id}
