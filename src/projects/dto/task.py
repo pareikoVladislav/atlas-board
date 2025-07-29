@@ -38,6 +38,7 @@ class TaskDetailDTO(serializers.ModelSerializer):
             'tags',
         ]
 
+
         
 class TaskCreateDTO(serializers.ModelSerializer):
     class Meta:

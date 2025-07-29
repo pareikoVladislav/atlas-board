@@ -11,6 +11,7 @@ from src.projects.dto.task import (
     TaskAnalyticsPerDeveloperDTO
 )
 from src.projects.repositories import TaskRepository
+from src.users.models import User
 from src.projects.services.service_responce import ServiceResponse
 from src.shared.exception_handlers import handle_service_error
 
@@ -67,8 +68,6 @@ class TaskService:
             )
             response = TaskDetailDTO(instance=task)
 
-            return ServiceResponse(success=True, data=response.data)
-
         except Exception as e:
             return handle_service_error(e)
 
@@ -122,3 +121,11 @@ class TaskService:
 
         except Exception as e:
             return handle_service_error(e)
+
+    def assign_to_user(self, task_id: int, user: User) -> ServiceResponse:
+        task_data = {"assignee": user.id}
+        result = self.update_task(
+                         task_id=task_id,
+                         task_data=task_data,
+                         partial=True)
+        return result
