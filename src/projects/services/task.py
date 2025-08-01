@@ -2,15 +2,18 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.request import Request
 from django.db.models.query import QuerySet
 
+
 from src.projects.dto.task import (
     TaskCreateDTO,
     TaskUpdateDTO,
     TasksListDTO,
     TaskDetailDTO,
     TaskAnalyticsPerProjectDTO,
-    TaskAnalyticsPerDeveloperDTO
+    TaskAnalyticsPerDeveloperDTO, TaskCommentListDTO, TaskCommentCreateDTO, TaskCommentUpdateDTO, TaskCommentDetailDTO
 )
 from src.projects.repositories import TaskRepository
+from src.projects.repositories.task import TaskCommentRepository
+from src.projects.services.service_responce import ServiceResponse, ErrorType
 from src.users.models import User
 from src.projects.services.service_responce import ServiceResponse
 from src.shared.exception_handlers import handle_service_error
@@ -129,3 +132,124 @@ class TaskService:
                          task_data=task_data,
                          partial=True)
         return result
+
+
+class TaskCommentService:
+    def __init__(self):
+        self.repository = TaskCommentRepository()
+
+    def create_comment(self, request: Request, task_id: int) -> ServiceResponse:
+        """Создать комментарий к задаче"""
+        serializer = TaskCommentCreateDTO(
+            data=request.data,
+            context={'request': request, 'view': type('MockView', (), {'kwargs': {'task_id': task_id}})()}
+        )
+
+        if not serializer.is_valid():
+            return ServiceResponse(
+                success=False,
+                errors=serializer.errors,
+                error_type=ErrorType.VALIDATION_ERROR,
+                message="Invalid data"
+            )
+
+        try:
+            comment = serializer.save()
+            response_data = TaskCommentListDTO(comment).data
+            return ServiceResponse(success=True, data=response_data)
+        except IntegrityError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.INTEGRITY_ERROR,
+                message=str(e)
+            )
+        except DatabaseError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
+                message=str(e)
+            )
+
+    def get_task_comments(self, task_id: int) -> ServiceResponse:
+        """Получить все комментарии задачи"""
+        try:
+            comments = self.repository.get_comments_by_task(task_id)
+            serializer = TaskCommentListDTO(comments, many=True)
+            return ServiceResponse(success=True, data=serializer.data)
+        except Exception as e:
+            return ServiceResponse(
+                error_type=ErrorType.UNKNOWN_ERROR,
+                success=False,
+                message=f'Error getting comments: {str(e)}'
+            )
+
+    def get_comment(self, comment_id: int):
+        """Получить комментарий по id"""
+        try:
+            comment = self.repository.get_comment_by_id(comment_id)
+            response_data = TaskCommentListDTO(comment).data
+            return ServiceResponse(success=True, data=response_data)
+        except ObjectDoesNotExist as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.NOT_FOUND,
+                message=str(e)
+            )
+        except DatabaseError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
+            )
+
+
+    def update_comment(self, comment_id: int, request: Request) -> ServiceResponse:
+        """Обновить комментарий"""
+        serializer = TaskCommentUpdateDTO(data=request.data)
+
+        if not serializer.is_valid():
+            return ServiceResponse(
+                success=False,
+                errors=serializer.errors,
+                error_type=ErrorType.VALIDATION_ERROR,
+                message="Invalid data"
+            )
+
+        try:
+            comment = self.repository.update_comment(
+                comment_id,
+                request.user.id,
+                **serializer.validated_data
+            )
+            response_data = TaskCommentListDTO(comment).data
+            return ServiceResponse(success=True, data=response_data)
+        except ObjectDoesNotExist as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.NOT_FOUND,
+                message=str(e)
+            )
+        except DatabaseError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
+                message=str(e)
+            )
+
+    def delete_comment(self, comment_id: int, user_id: int) -> ServiceResponse:
+        """Удалить комментарий"""
+        try:
+            success = self.repository.delete_comment(comment_id, user_id)
+            if success:
+                return ServiceResponse(success=True, message="Comment deleted")
+            else:
+                return ServiceResponse(
+                    success=False,
+                    error_type=ErrorType.NOT_FOUND,
+                    message="Comment not found or access denied"
+                )
+        except DatabaseError as e:
+            return ServiceResponse(
+                success=False,
+                error_type=ErrorType.UNKNOWN_ERROR,
+                message=str(e)
+            )

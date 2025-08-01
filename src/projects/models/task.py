@@ -6,11 +6,38 @@ from src.projects.models.base_model import BaseFieldsModel
 from src.choices import Status, Priority
 
 
-class Task(BaseFieldsModel):
+class TaskComment(BaseFieldsModel):
+    text = models.TextField(
+        validators=[MinLengthValidator(1)],
+        help_text="Comment text"
+    )
 
+    task = models.ForeignKey(
+        'Task',
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+
+    author = models.ForeignKey(
+        'users.User',
+        on_delete=models.CASCADE,
+        related_name='task_comments'
+    )
+
+    class Meta:
+        db_table = "task_comments"
+        verbose_name = "Task Comment"
+        verbose_name_plural = "Task Comments"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on {self.task.title}"
+
+
+class Task(BaseFieldsModel):
     title = models.CharField(
         max_length=255,
-        validators = [MinLengthValidator(10)]
+        validators=[MinLengthValidator(10)]
     )
     description = models.TextField(
         blank=True,
@@ -34,13 +61,13 @@ class Task(BaseFieldsModel):
     deadline: timezone = models.DateTimeField()
 
     project = models.ForeignKey(
-        'Project',  # строковая ссылка на проект
+        'Project',
         on_delete=models.CASCADE,
         related_name="tasks"
     )
 
     assignee = models.ForeignKey(
-        'users.User',  # строковая ссылка на пользователя
+        'users.User',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -48,7 +75,7 @@ class Task(BaseFieldsModel):
     )
 
     created_by = models.ForeignKey(
-        'users.User',  # строковая ссылка на пользователя
+        'users.User',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
